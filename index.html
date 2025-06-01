@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ethereal Organization</title>
+  <style>
+    /* Reset */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #c9d1d9;
+      line-height: 1.6;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      background-color: #111111;
+    }
+
+    header {
+      background: linear-gradient(90deg, #000000, #050505);
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #30363d;
+    }
+
+    header img.logo {
+      height: 40px;
+    }
+
+    header nav a {
+      color: #58a6ff;
+      text-decoration: none;
+      margin-left: 25px;
+      font-weight: 600;
+      transition: color 0.3s ease;
+    }
+
+    header nav a:hover {
+      color: #1f6feb;
+    }
+
+    main {
+      flex: 1;
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .hero {
+      text-align: center;
+      margin-bottom: 60px;
+    }
+
+    .hero h1 {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      color: #58a6ff;
+    }
+
+    .hero p {
+      font-size: 1.25rem;
+      color: #8b949e;
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    .wrapper{
+        flex: 1;          /* takes all available space between header and footer */
+        background: linear-gradient(180deg, #000000, #161b22);
+        display: flex;
+        justify-content: center;
+        padding: 40px 20px;
+    }
+
+    section {
+      margin-bottom: 60px;
+    }
+
+    section h2 {
+      font-size: 2rem;
+      margin-bottom: 15px;
+      border-bottom: 2px solid #58a6ff;
+      padding-bottom: 5px;
+      color: #58a6ff;
+    }
+
+    section p {
+      font-size: 1rem;
+      color: #c9d1d9;
+      max-width: 700px;
+    }
+
+    footer {
+      background-color: #161b22;
+      text-align: center;
+      padding: 20px;
+      border-top: 1px solid #30363d;
+      color: #8b949e;
+      font-size: 0.9rem;
+      user-select: none;
+    }
+
+    /* Responsive */
+    @media (max-width: 600px) {
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      header nav {
+        margin-top: 10px;
+      }
+
+      header nav a {
+        margin-left: 0;
+        margin-right: 15px;
+      }
+
+      main {
+        margin: 20px 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <img src="logo.png" alt="Ethereal Logo" class="logo" />
+  <nav>
+    <a href="#about">About</a>
+    <a href="#projects">Projects</a>
+    <a href="#contact">Contact</a>
+    <a href="search/index.html">Omega Threat Archive</a>
+  </nav>
+</header>
+
+<div class="wrapper">
+    <main>
+      <section class="hero" aria-label="Introduction">
+        <h1>Welcome to Ethereal</h1>
+        <p>Building innovative open-source projects and solutions with passion and precision.</p>
+      </section>
+    
+      <section id="about" aria-label="About Ethereal">
+        <h2>About Us</h2>
+        <p>Ethereal is a cutting-edge technology organization committed to creating powerful tools and software. We believe in transparency, innovation, and community-driven development.</p>
+      </section>
+    
+      <section id="projects" aria-label="Our Projects">
+        <h2>Our Projects</h2>
+        <p>From security research to open-source archives, explore our growing collection of projects designed to empower developers and enthusiasts worldwide.</p>
+      </section>
+    
+      <section id="contact" aria-label="Contact Ethereal">
+        <h2>Contact Us</h2>
+        <p>Have questions or want to collaborate? Reach out via <a href="https://github.com/ethereal-organization" target="_blank" rel="noopener" style="color:#58a6ff;">GitHub</a>.</p>
+      </section>
+    </main>
+</div>
+
+<footer>
+  &copy; 2025 Ethereal Organization. All rights reserved.
+</footer>
+
+</body>
+</html>
