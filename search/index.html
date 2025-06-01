@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Virus Archive</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header role="banner" aria-label="Site Header">
+    <img src="project.png" alt="Ethereal" title="A project from Ethereal" class="project">
+  </header>
+
+  <main role="main">
+    <label for="searchBar" class="visually-hidden">Start searching...</label>
+    <input type="text" id="searchBar" placeholder="Search files..." autocomplete="off" aria-describedby="searchHelp" />
+    <div id="searchHelp" class="visually-hidden">Type to filter files by name</div>
+
+    <div id="spinner" class="spinner" aria-live="polite" aria-label="Loading indicator" role="status"></div>
+    <div id="fileExplorer" class="explorer" tabindex="0" aria-label="File explorer"></div>
+  </main>
+
+  <script src="file.js"></script>
+</body>
+</html>
