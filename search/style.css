@@ -8,7 +8,7 @@ body {
   overflow-y: scroll;
   scrollbar-color: #30363d #0d1117;
   scrollbar-width: thin;
-  font-weight: 400;
+  font-weight: 400 !important;
 }
 
 body > *:not(footer) {
@@ -147,26 +147,6 @@ p {
   100% { transform: rotate(360deg); }
 }
 
-/* File extension badges */
-.file::after {
-  content: attr(data-ext);
-  background: linear-gradient(45deg, #58a6ff, #1f6feb);
-  color: white;
-  font-weight: 600;
-  padding: 3px 8px;
-  font-size: 11px;
-  border-radius: 12px;
-  letter-spacing: 0.05em;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.4);
-  margin-left: auto;
-  margin-right: 10px;
-  text-transform: uppercase;
-  display: none;
-}
-
-.file[data-ext]::after {
-  display: inline-block;
-}
 .powered{
     text-align: right;
     height: 1.0em;    /* Adjust size to fit nicely with text */
@@ -175,4 +155,105 @@ p {
   display: block;      /* make it a block-level element */
   margin-left: auto;   /* push it all the way to the right */
   height: 1.5em;       /* adjust size */
+}
+.filename {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px; /* spacing between filename text and file-extension */
+}
+
+.file-extension {
+  /* Try pushing it right using margin-left auto */
+  margin-left: auto;
+
+  /* If container isn't flex, fallback with absolute positioning */
+  position: relative; /* make it a positioning context */
+
+  /* Set font and styling */
+  font-weight: 600;
+  color: #60a5fa;
+  background-color: rgba(37, 99, 235, 0.1);
+  padding: 2px 6px;
+  border-radius: 6px;
+  user-select: none;
+  white-space: nowrap;
+  transition: background-color 0.3s ease;
+
+  /* Add inline-flex so contents center nicely */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Try text alignment */
+  text-align: right;
+
+  /* If flex container doesn't work, try absolute right */
+  right: 0;
+  left: auto;
+
+  /* Just in case, set max-width so it won't overflow */
+  max-width: 100%;
+}
+
+/* If parent is NOT flex, use absolute positioning to pin right */
+.file {
+  position: relative; /* parent for absolute children */
+}
+
+.file-extension {
+  position: absolute;
+  right: 10px; /* adjust as needed */
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+.file-extension:hover {
+  background-color: rgba(37, 99, 235, 0.3);
+}
+
+/* Custom extension badge aligned right */
+.custom-ext {
+  margin-left: auto;
+  position: absolute;
+  right: 100px;       /* offset to the left of file-extension; adjust as needed */
+  top: 50%;
+  transform: translateY(-50%);
+  font-weight: 600;
+  color: #60a5fa;
+  background-color: rgba(37, 99, 235, 0.1);
+  padding: 2px 6px;
+  border-radius: 6px;
+  user-select: none;
+  white-space: nowrap;
+  transition: background-color 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: right;
+}
+a{
+animation: unlinks 0.5s forwards;
+}
+a:hover{
+  animation: links 0.5s forwards;
+}
+
+@keyframes links {
+  0% {
+    color: #58a6ff;
+  }
+  100%{
+    color: #ffffff;
+  }
+}
+@keyframes unlinks {
+  100% {
+    color: #58a6ff;
+  }
+  0%{
+    color: #ffffff;
+  }
+}
+h3{
+  text-align: center;
 }
