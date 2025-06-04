@@ -36,7 +36,7 @@ const fileTypeDescriptions = {
   ".ruby.": { description: "Ruby script", extension: "rb" },
   ".script.": { description: "Script file", extension: "scr" },
   ".sap.": { description: "SAP application file", extension: "sap" },
-  ".eicar.": { description: "Antivirus test file", extension: "eicar" },
+  "eicar": { description: "Antivirus test file", extension: "eicar" },
   ".pif.": { description: "Program Information File", extension: "pif" },
   ".hta.": { description: "HTML Application", extension: "hta" },
   ".iis.": { description: "IIS script file", extension: "iis" },
@@ -46,7 +46,7 @@ const fileTypeDescriptions = {
   ".swf.": { description: "Adobe Flash file", extension: "swf" },
   ".freebsd.": { description: "FreeBSD executable", extension: "elf" },
   ".symbos.": { description: "Symbian OS executable", extension: "sis" },
-  "password-protected": { description: "Password-protected executable", extension: "password-protected" },
+  "password-protected": { description: "Password-protected executable", extension: "exe" },
   ".acad.": { description: "AutoCAD script", extension: "scr" },
   ".ansi.": { description: "ANSI text file", extension: "ans" },
   ".nsis.": { description: "NSIS installer script", extension: "nsi" },
@@ -67,7 +67,6 @@ const fileTypeDescriptions = {
   ".msaccess.": { description: "Microsoft Access database", extension: "mdb" },
   ".abap.": { description: "ABAP program file", extension: "abap" },
   ".1c.": { description: "1C business application file", extension: "1cd" },
-  ".basic.": { description: "Basic source code file", extension: "bas" },
   ".amipro.": { description: "AmiPro document", extension: "wpd" },
   ".als.": { description: "AutoLISP script", extension: "lsp" },
   ".boot.": { description: "Startup program file", extension: "sys" },
@@ -88,7 +87,9 @@ const fileTypeDescriptions = {
   ".whs.": { description: "WinHEX script file", extension: "whs" },
   ".winpif.": { description: "Windows Program Information file", extension: "pif" },
   ".wince.": { description: "Windows CE application", extension: "exe" },
-  "EICAR": { description: "EICAR test file", extension: "eicar" }
+  ".irc.": { description: "Unknown", extension: "" },
+  ".bas.": { description: "BASIC script", extension: "bas" },
+  ".boot-dos.": { description: "MS-DOS executable", extension: "com" }
 };
 
 // Stores the complete file tree pulled from the GitHub repo
@@ -142,19 +143,49 @@ function buildNestedTree(tree) {
   });
   return root;
 }
+const priorityOrder = [".linux.", ".perl.", ".sap.", ".win32.", ".win16.", ".dos."];
 
-function getInternalKeyFromName(name) {
-  // Find the first matching internal key from the fileTypeDescriptions
-  // Skip special keys like "password-protected" and "EICAR"
-  for (const key in fileTypeDescriptions) {
-    if (key === "password-protected" || key === "EICAR") continue;
-    const trimmedKey = key.replace(/\./g, "");
-    if (name.toLowerCase().includes(trimmedKey)) {
-      return key;  // Return the matched key
+function findFileType(filename) {
+  // Check special file types first
+  const specialType = findSpecialFileType(filename);
+  if (specialType) return specialType;
+
+  // Original logic for .xxx. keys
+  const tokens = filename.split('.');
+  const foundTypes = [];
+
+  for (const token of tokens) {
+    const key = `.${token.toLowerCase()}.`;
+    if (fileTypeDescriptions[key]) {
+      foundTypes.push(key);
+    }
+  }
+
+  if (foundTypes.length === 0) return null;
+
+  // Pick the highest priority type found
+  foundTypes.sort((a, b) => {
+    const aIndex = priorityOrder.indexOf(a);
+    const bIndex = priorityOrder.indexOf(b);
+    if (aIndex === -1) return 1;
+    if (bIndex === -1) return -1;
+    return aIndex - bIndex;
+  });
+
+  return fileTypeDescriptions[foundTypes[0]];
+}
+
+const specialFileTypes = ["eicar", "password-protected"];
+function findSpecialFileType(filename) {
+  const lowerFilename = filename.toLowerCase();
+  for (const specialKey of specialFileTypes) {
+    if (lowerFilename.includes(specialKey)) {
+      return fileTypeDescriptions[specialKey];
     }
   }
   return null;
 }
+
 
 function createNode(name, node, depth = 0, search = "") {
   const container = document.createElement("div");
@@ -178,23 +209,23 @@ function createNode(name, node, depth = 0, search = "") {
 
 if (!isFolder) {
   // Use internal key lookup to find matching file type description
-  const internalKey = getInternalKeyFromName(name);
-  if (internalKey && fileTypeDescriptions[internalKey]) {
-    const desc = fileTypeDescriptions[internalKey].description;
-    const ext = fileTypeDescriptions[internalKey].extension;
+  const fileType = findFileType(name);
+if (fileType) {
+  const desc = fileType.description;
+  const ext = fileType.extension;
 
-    // Create extension span
-    const extensionSpan = document.createElement("span");
-    extensionSpan.className = "file-extension";
-    extensionSpan.textContent = `.${ext}`;
+  // Create extension span
+  const extensionSpan = document.createElement("span");
+  extensionSpan.className = "file-extension";
+  extensionSpan.textContent = `.${ext}`;
 
-    // Append the extensionSpan directly to the label
-    label.appendChild(extensionSpan);
+  // Append the extensionSpan directly to the label
+  label.appendChild(extensionSpan);
 
-    // Create description span
-    customExtSpan = document.createElement("span");
-    customExtSpan.className = "custom-ext";
-    customExtSpan.textContent = ` ${desc}`;
+  // Create description span
+  customExtSpan = document.createElement("span");
+  customExtSpan.className = "custom-ext";
+  customExtSpan.textContent = ` ${desc}`;
   }
 }
 
@@ -271,7 +302,6 @@ if (!isFolder) {
 }
 function getInternalKeyFromName(name) {
   for (const key in fileTypeDescriptions) {
-    if (key === "password-protected" || key === "EICAR") continue;
     const trimmedKey = key.replace(/\./g, "");
     if (name.toLowerCase().includes(trimmedKey)) {
       return key;  // return the key, not extension
