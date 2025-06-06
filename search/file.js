@@ -69,7 +69,7 @@ const fileTypeDescriptions = {
   ".1c.": { description: "1C business application file", extension: "1cd" },
   ".amipro.": { description: "AmiPro document", extension: "wpd" },
   ".als.": { description: "AutoLISP script", extension: "lsp" },
-  ".boot.": { description: "Startup program file", extension: "sys" },
+  ".boot.": { description: "Unknown", extension: "" },
   ".ferite.": { description: "Ferite script file", extension: "fer" },
   ".dos32.": { description: "32-bit DOS executable", extension: "exe" },
   ".kix.": { description: "KiXtart script", extension: "kix" },
