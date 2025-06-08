@@ -89,7 +89,8 @@ const fileTypeDescriptions = {
   ".wince.": { description: "Windows CE application", extension: "exe" },
   ".irc.": { description: "Unknown", extension: "" },
   ".bas.": { description: "BASIC script", extension: "bas" },
-  ".boot-dos.": { description: "MS-DOS executable", extension: "com" }
+  ".boot-dos.": { description: "MS-DOS executable", extension: "com" },
+  ".ichitaro.": { description: "Ichitaro document", extension: "jtd" }
 };
 
 // Stores the complete file tree pulled from the GitHub repo
