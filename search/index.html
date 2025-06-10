@@ -7,21 +7,47 @@
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
+
   <header role="banner" aria-label="Site Header">
     <img src="project.png" alt="Ethereal" title="A project from Ethereal" class="project">
   </header>
-  <div role="alert" class="warning-banner" tabindex="0" style="background: #ffcc00; color: #000; padding: 1em; text-align: center; font-weight: bold;">
-  We have noticed that due to how the API works, it cuts off results at a specific part (in this case Trojan/Downloader). We are working to fix the limitation for the best experience.
+    <div class="notice-bar" role="banner" aria-label="Important Notice">
+    <p>⚡ This archive is for educational and research purposes only. Use responsibly! ⚡<br>Some file types may be inaccurate due to our way of assigning file extensions.</p>
+    <button class="notice-bar-close" aria-label="Close notice bar">&times;</button>
   </div>
   <main role="main">
-    <label for="searchBar" class="visually-hidden">Start searching...</label>
-    <input type="text" id="searchBar" placeholder="Search files..." autocomplete="off" aria-describedby="searchHelp" />
-    <div id="searchHelp" class="visually-hidden">Type to filter files by name</div>
+    <div class="search-controls">
+      <label for="searchBar">Start searching...</label>
+      <div class="search-input-group">
+      <input type="text" id="searchBar" placeholder="Search files..." autocomplete="off" aria-describedby="searchHelp" />
+      <button class="filter-toggle" id="toggleFilterBtn" aria-expanded="false" aria-controls="filterSection">Filter</button>
+      <button class="settings-button" id="toggleSettingsBtn" aria-expanded="false" aria-controls="settingsSection">Settings</button>
+      </div>
+      </div>
+
+    <section aria-label="File Type Filter" class="filter-section" id="filterSection">
+      <label for="filterField" class="visually-hidden">Filter by file type</label>
+      <select id="filterField" aria-describedby="filterHelp">
+      </select>
+    </section>
+
+    <section aria-label="Settings" class="settings" id="settingsSection">
+      <label for="itemsPerPage" id="itemsPerPageLabel">Items to show per batch:</label>
+      <select id="itemsPerPage" aria-labelledby="itemsPerPageLabel">
+        <option value="1">1</option>
+        <option value="10" selected>10</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+        <option value="500">500</option>
+        <option value="1000">1000</option>
+      </select>
+    </section>
 
     <div id="spinner" class="spinner" aria-live="polite" aria-label="Loading indicator" role="status"></div>
     <div id="fileExplorer" class="explorer" tabindex="0" aria-label="File explorer"></div>
   </main>
 
   <script src="file.js"></script>
+  <script src="button.js"></script>
 </body>
 </html>
