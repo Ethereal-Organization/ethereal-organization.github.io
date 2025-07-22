@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Omega Threat Archive</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header role="banner" aria-label="Site Header">
+    <img src="project.png" alt="Ethereal" title="A project from Ethereal" class="project">
+  </header>
+    <div class="notice-bar" role="banner" aria-label="Important Notice">
+    <p>⚡ This archive is for educational and research purposes only. Use responsibly! ⚡<br>Some file types may be inaccurate due to our way of assigning file extensions.</p>
+    <button class="notice-bar-close" aria-label="Close notice bar">&times;</button>
+  </div>
+  <div id="entryCount">Loading samples count...</div>
+  <main role="main">
+    <div class="search-controls">
+      <label for="searchBar">Start searching...</label>
+      <div class="search-input-group">
+      <input type="text" id="searchBar" placeholder="Search files..." autocomplete="off" aria-describedby="searchHelp" />
+      <button class="filter-toggle" id="toggleFilterBtn" aria-expanded="false" aria-controls="filterSection">Filter</button>
+      <button class="settings-button" id="toggleSettingsBtn" aria-expanded="false" aria-controls="settingsSection">Settings</button>
+      </div>
+      </div>
+
+    <section aria-label="File Type Filter" class="filter-section" id="filterSection">
+      <label for="filterField" class="visually-hidden">Filter by file type</label>
+      <select id="filterField" aria-describedby="filterHelp">
+      </select>
+    </section>
+
+    <section aria-label="Settings" class="settings" id="settingsSection">
+      <label for="itemsPerPage" id="itemsPerPageLabel">Items to show per batch:</label>
+      <select id="itemsPerPage" aria-labelledby="itemsPerPageLabel">
+        <option value="1">1</option>
+        <option value="10" selected>10</option>
+        <option value="50">50</option>
+        <option value="100">100</option>
+        <option value="500">500</option>
+        <option value="1000">1000</option>
+      </select>
+    </section>
+
+    <div id="spinner" class="spinner" aria-live="polite" aria-label="Loading indicator" role="status"></div>
+    <div id="fileExplorer" class="explorer" tabindex="0" aria-label="File explorer"></div>
+  </main>
+
+  <script src="file.js"></script>
+  <script src="button.js"></script>
+  <script src="count.js"></script>
+  <script src="rightclick.js"></script>
+</body>
+</html>
