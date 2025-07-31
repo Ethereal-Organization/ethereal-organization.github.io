@@ -364,9 +364,12 @@ function buildExplorerUI(treeNode, container, depth = 0, search = "", isLazy = t
         if (existingBtn) existingBtn.remove();
     }
     
+    // Disable lazy loading if "all" is selected
+    const showAll = itemsPerPageSelect.value === "all";
+
     let currentDisplayedFilteredCount = parseInt(container.dataset.filteredFileCount, 10);
     const selectedLimit = parseInt(itemsPerPageSelect.value, 10) || DEFAULT_DISPLAY_LIMIT;
-    const effectiveLazy = isLazy;
+    const effectiveLazy = isLazy && !showAll;
 
     const startIdx = currentDisplayedFilteredCount;
     const endIdx = effectiveLazy ? Math.min(startIdx + selectedLimit, filteredFiles.length) : filteredFiles.length;
