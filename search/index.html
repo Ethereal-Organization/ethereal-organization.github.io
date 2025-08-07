@@ -1,65 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Omega Threat Archive</title>
-  <link rel="stylesheet" href="style.css" />
-  <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <meta charset="UTF-8">
+    <title>Temporarily Down</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <style>
+        .down-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+            animation: fadeSlideUp 0.6s ease forwards;
+        }
+
+        .down-icon {
+            font-size: 80px;
+            margin-bottom: 20px;
+            animation: bounceBadge 1s ease infinite;
+            color: var(--primary-accent);
+        }
+
+        .down-title {
+            font-size: 2.5em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: var(--text-color);
+        }
+
+        .down-subtitle {
+            font-size: 1.2em;
+            color: var(--dim-text);
+            margin-bottom: 30px;
+        }
+
+        .retry-button, .summon-button {
+            padding: 12px 24px;
+            font-size: 1em;
+            border-radius: var(--border-radius);
+            background: linear-gradient(135deg, #2c323c, #1b1f28);
+            color: var(--primary-accent);
+            border: 1px solid var(--primary-accent);
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(88, 166, 255, 0.4);
+            transition: background 0.3s ease, box-shadow 0.3s ease, transform 0.2s ease;
+            margin: 10px;
+        }
+
+        .retry-button:hover, .summon-button:hover {
+            background: linear-gradient(135deg, #58a6ff, #1e2a4d);
+            color: white;
+            transform: scale(1.05);
+            box-shadow: 0 0 12px 2px var(--primary-accent);
+        }
+
+        .retry-button:active, .summon-button:active {
+            transform: scale(0.95);
+        }
+    </style>
 </head>
 <body>
-  <header role="banner" aria-label="Site Header">
-    <img src="project.png" alt="Ethereal" title="A project from Ethereal" class="project">
-  </header>
-    <div class="notice-bar" role="banner" aria-label="Important Notice">
-    <p>⚡ This archive is for educational and research purposes only. Use responsibly! ⚡<br>Some file types may be inaccurate due to our way of assigning file extensions.</p>
-    <button class="notice-bar-close" aria-label="Close notice bar">&times;</button>
-  </div>
-  <div id="header-controls">
-  	<div id="entryCount">Loading samples count...</div>
-  	<div id="downloadQueue"></div>
-  </div>
-  <main role="main">
-    <div class="search-controls">
-      <label for="searchBar">Start searching...</label>
-      <div class="search-input-group">
-      <input type="text" id="searchBar" placeholder="Search files..." autocomplete="off" aria-describedby="searchHelp" />
-      <button class="filter-toggle" id="toggleFilterBtn" aria-expanded="false" aria-controls="filterSection">Filter</button>
-      <button class="settings-button" id="toggleSettingsBtn" aria-expanded="false" aria-controls="settingsSection">Settings</button>
-      </div>
-      </div>
-    <section aria-label="File Type Filter" class="filter-section" id="filterSection">
-      <label for="filterField" class="visually-hidden">Filter by file type</label>
-      <select id="filterField" aria-describedby="filterHelp">
-      </select>
-    </section>
-    <section aria-label="Settings" class="settings" id="settingsSection">
-      <label for="itemsPerPage" id="itemsPerPageLabel">Items to show per batch:</label>
-      <select id="itemsPerPage" aria-labelledby="itemsPerPageLabel">
-        <option value="1">1</option>
-        <option value="5">5</option>
-        <option value="10" selected>10</option>
-        <option value="20">20</option>
-        <option value="25">25</option>
-        <option value="50">50</option>
-        <option value="100">100</option>
-        <option value="200">200</option>
-        <option value="250">250</option>
-        <option value="500">500</option>
-        <option value="750">750</option>
-        <option value="1000">1000</option>
-        <option value="2000">2000</option>
-        <option value="5000">5000</option>
-        <option value="all">All</option>
-      </select>
-    </section>
-    <div id="spinner" class="spinner" aria-live="polite" aria-label="Loading indicator" role="status"></div>
-    <div id="fileExplorer" class="explorer" tabindex="0" aria-label="File explorer"></div>
-  </main>
-  <script src="file.js"></script>
-  <script src="button.js"></script>
-  <script src="count.js"></script>
-  <script src="rightclick.js"></script>
-  <script src="downloadpanel.js"></script>
+    <div class="down-wrapper">
+        <div class="down-icon">⚠️</div>
+        <div class="down-title">Temporarily Down</div>
+        <div class="down-subtitle">The Omega Threat Archive has temporarily went offline. Check back later.</div>
+    </div>
 </body>
 </html>
