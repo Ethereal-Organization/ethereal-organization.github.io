@@ -28,12 +28,14 @@ document.body.appendChild(contextMenu);
 
 const modalOverlay = document.createElement('div');
 modalOverlay.id = 'properties-modal-overlay';
-modalOverlay.style.position = 'fixed';
+modalOverlay.style.position = 'absolute';
 modalOverlay.style.top = '0';
 modalOverlay.style.left = '0';
-modalOverlay.style.width = '100vw';
-modalOverlay.style.height = '100vh';
-modalOverlay.style.backgroundColor = 'rgba(0,0,0,0.6)';
+modalOverlay.style.width = '100%';
+modalOverlay.style.height = '100%';
+modalOverlay.style.minWidth = '100vw';
+modalOverlay.style.minHeight = '100vh';
+modalOverlay.style.backgroundColor = 'rgba(0,0,0,0.5)';
 modalOverlay.style.display = 'none';
 modalOverlay.style.zIndex = '11000';
 modalOverlay.style.fontFamily = 'Segoe UI, Tahoma, Geneva, Verdana, sans-serif';
@@ -49,10 +51,7 @@ modalDialog.style.borderRadius = '6px';
 modalDialog.style.width = '400px';
 modalDialog.style.maxWidth = '90vw';
 modalDialog.style.padding = '20px';
-modalDialog.style.position = 'absolute';
-modalDialog.style.top = '50%';
-modalDialog.style.left = '50%';
-modalDialog.style.transform = 'translate(-50%, -50%)';
+modalDialog.style.position = 'absolute'; // changed to absolute
 modalDialog.style.boxShadow = '0 6px 20px rgba(0,0,0,0.7)';
 modalDialog.style.userSelect = 'text';
 
@@ -109,6 +108,37 @@ function createPropertyRow(label, value) {
   return row;
 }
 
+// == MODAL CENTERING FIX ==
+
+function centerModal() {
+  const scrollY = window.scrollY || document.documentElement.scrollTop;
+  const scrollX = window.scrollX || document.documentElement.scrollLeft;
+
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+
+  const modalWidth = modalDialog.offsetWidth;
+  const modalHeight = modalDialog.offsetHeight;
+
+  modalDialog.style.top = `${scrollY + (viewportHeight - modalHeight) / 2}px`;
+  modalDialog.style.left = `${scrollX + (viewportWidth - modalWidth) / 2}px`;
+}
+
+function showModal() {
+  modalOverlay.style.display = 'block';
+  centerModal();
+}
+
+// Recenter on resize/scroll
+window.addEventListener('resize', centerModal);
+window.addEventListener('scroll', centerModal);
+
+modalOverlay.addEventListener('click', (event) => {
+  if (event.target === modalOverlay) {
+    modalOverlay.style.display = 'none';
+  }
+});
+
 // == QUEUE SHARED STATE SETUP ==
 
 window.queuedFiles = window.queuedFiles || new Set();
@@ -147,13 +177,11 @@ loadAllFileData();
 
 // == CONTEXT MENU LOGIC ==
 
-// Extract filename from target element based on type (folder or file)
 function getFileNameFromElement(target) {
   const filenameEl = target.querySelector('.filename');
   if (!filenameEl) return 'Unknown';
 
   if (target.classList.contains('file')) {
-    // For files: extract only the first text node inside .filename (filename without description/extension)
     for (const node of filenameEl.childNodes) {
       if (node.nodeType === Node.TEXT_NODE && node.textContent.trim() !== '') {
         return node.textContent.trim();
@@ -161,7 +189,6 @@ function getFileNameFromElement(target) {
     }
     return 'Unknown';
   } else {
-    // For folders: the entire textContent of .filename (no nested spans expected)
     return filenameEl.textContent.trim();
   }
 }
@@ -187,7 +214,7 @@ function removeFolderAndContents(folderName) {
 }
 
 function handleAddToQueue(folderName, recursive = false, dryRun = false) {
-  const filesToAdd = getAllFilesInFolder(folderName); // however you gather files
+  const filesToAdd = getAllFilesInFolder(folderName);
 
   if (dryRun) {
     return filesToAdd.length;
@@ -226,8 +253,8 @@ function buildContextMenu(target) {
       action: (target) => {
         const name = getFileNameFromElement(target);
         const type = isFolder ? 'Folder' : 'File';
-	const size = isFolder ? "-" : (window.fileSizes[fileName] ? formatSize(window.fileSizes[fileName]) : "Unknown");
-	const dateModified = 'WIP';
+        const size = isFolder ? "-" : (window.fileSizes[fileName] ? formatSize(window.fileSizes[fileName]) : "Unknown");
+        const dateModified = 'WIP';
 
         modalContent.innerHTML = '';
 
@@ -252,7 +279,7 @@ function buildContextMenu(target) {
           modalContent.appendChild(createPropertyRow('Date modified:', dateModified));
         }
 
-        modalOverlay.style.display = 'block';
+        showModal();
       }
     },
     {
@@ -322,18 +349,34 @@ function buildContextMenu(target) {
 }
 
 function showContextMenu(x, y) {
+  const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+  const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
+  
   contextMenu.style.top = `${y}px`;
   contextMenu.style.left = `${x}px`;
   contextMenu.style.display = 'block';
   contextMenu.style.opacity = '1';
 
-  // Adjust if out of viewport
   const rect = contextMenu.getBoundingClientRect();
-  if (rect.right > window.innerWidth) {
-    contextMenu.style.left = `${window.innerWidth - rect.width - 10}px`;
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+  
+  if (rect.right > viewportWidth) {
+    const newLeft = x - rect.width;
+    contextMenu.style.left = `${Math.max(scrollLeft + 10, newLeft)}px`;
   }
-  if (rect.bottom > window.innerHeight) {
-    contextMenu.style.top = `${window.innerHeight - rect.height - 10}px`;
+  
+  if (rect.bottom > viewportHeight) {
+    const newTop = y - rect.height;
+    contextMenu.style.top = `${Math.max(scrollTop + 10, newTop)}px`;
+  }
+  
+  if (rect.left < 0) {
+    contextMenu.style.left = `${scrollLeft + 10}px`;
+  }
+  
+  if (rect.top < 0) {
+    contextMenu.style.top = `${scrollTop + 10}px`;
   }
 }
 
@@ -359,12 +402,6 @@ document.addEventListener('click', event => {
   }
 });
 
-modalOverlay.addEventListener('click', (event) => {
-  if (event.target === modalOverlay) {
-    modalOverlay.style.display = 'none';
-  }
-});
-
 function formatSize(bytes) {
   if (typeof bytes !== "number" || isNaN(bytes)) return "Unknown";
   const units = ["B", "KB", "MB", "GB", "TB"];
@@ -381,7 +418,6 @@ function formatSize(bytes) {
 // ==============
 
 window.getAllFilesInFolder = function(folderName) {
-  // Placeholder function that returns example file names within the folder
   return [
     folderName + '.file1.txt',
     folderName + '.file2.txt',
