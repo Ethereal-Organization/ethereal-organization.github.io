@@ -457,8 +457,9 @@ function hasMatchingFileDescendant(node, searchLower, selectedFilterKeyLower) {
  */
 async function loadExplorer() {
     const jsonFiles = [
-        "chunk_001.json",
-        "chunk_002.json",
+        "OTA-PART-1/chunk_001.json",
+        "OTA-PART-1/chunk_002.json",
+	"OTA-PART-2/chunk_001.json",
         // Add more files when needed
     ];
 
