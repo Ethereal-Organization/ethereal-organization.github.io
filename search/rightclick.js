@@ -269,7 +269,7 @@ function buildContextMenu(target) {
           const extension = extensionEl ? extensionEl.textContent.trim() : '-';
 
           modalContent.appendChild(createPropertyRow('Description:', description));
-          modalContent.appendChild(createPropertyRow('Extension:', extension));
+          modalContent.appendChild(createPropertyRow('Extensions:', extension));
           modalContent.appendChild(createPropertyRow('Size:', size));
           modalContent.appendChild(createPropertyRow('Date modified:', dateModified));
         } else {

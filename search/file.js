@@ -1,91 +1,94 @@
+// Constants defined before the main object
+const androidMistake = { description: "Android executable file", extensions: ["apk", "xapk", "apks"] };
+const powershell = { description: "PowerShell script", extensions: ["ps1", "psm1", "psd1", "ps1xml"] };
+
 // Mapping for internal file type codes to real-world extensions and descriptions
 const fileTypeDescriptions = {
-    // ... (rest of your fileTypeDescriptions, no change needed here)
-    ".asp.": { description: "ASP.NET file", extension: "asp" },
-    ".java.": { description: "Java source file", extension: "java" },
-    ".js.": { description: "JavaScript file", extension: "js" },
-    ".linux.": { description: "Linux executable", extension: "bin" },
-    ".mac.": { description: "macOS application", extension: "app" },
-    ".msil.": { description: "Microsoft Intermediate Language file", extension: "dll" },
-    ".mssql.": { description: "Microsoft SQL Server script", extension: "sql" },
-    ".msword.": { description: "Microsoft Word document with macros", extension: "docm" },
-    ".mysql.": { description: "MySQL script", extension: "sql" },
-    ".os2.": { description: "OS/2 executable", extension: "exe" },
-    ".perl.": { description: "Perl script", extension: "pl" },
-    ".php.": { description: "PHP script", extension: "php" },
-    ".python.": { description: "Python script", extension: "py" },
-    ".sunos.": { description: "SunOS executable", extension: "sun" },
-    ".unix.": { description: "UNIX executable", extension: "sh" },
-    ".vbs.": { description: "VBScript file", extension: "vbs" },
-    ".win16.": { description: "16-bit Windows executable", extension: "exe" },
-    ".win32.": { description: "32-bit Windows executable", extension: "exe" },
-    ".win64.": { description: "64-bit Windows executable", extension: "exe" },
-    ".bat.": { description: "Batch file", extension: "bat" }, // This key is ".bat."
-    ".dos.": { description: "MS-DOS executable", extension: "com", keys: [".dos.", ".boot-dos."] },
-    ".html.": { description: "HTML file", extension: "html" },
-    ".multi.": { description: "Multi-platform executable", extension: "jar" },
-    ".ruby.": { description: "Ruby script", extension: "rb" },
-    ".script.": { description: "Script file", extension: "" },
-    ".sap.": { description: "SAP application file", extension: "sap" },
-    "eicar": { description: "Antivirus test file", extension: "eicar" },
-    ".pif.": { description: "Program Information File", extension: "pif" },
-    ".hta.": { description: "HTML Application", extension: "hta" },
-    ".iis.": { description: "IIS script file", extension: "iis" },
-    ".msexcel.": { description: "Microsoft Excel macro-enabled spreadsheet", extension: "xlsm" },
-    ".msppoint.": { description: "Microsoft PowerPoint file", extension: "pptm" },
-    ".shell.": { description: "Shell script", extension: "sh" },
-    ".swf.": { description: "Adobe Flash file", extension: "swf" },
-    ".freebsd.": { description: "FreeBSD executable", extension: "elf" },
-    ".symbos.": { description: "Symbian OS executable", extension: "sis" },
-    "password-protected": { description: "Password-protected executable", extension: "exe" },
-    ".acad.": { description: "AutoCAD script", extension: "scr" },
-    ".ansi.": { description: "ANSI text file", extension: "ans" },
-    ".nsis.": { description: "NSIS installer script", extension: "nsi" },
-    ".novell.": { description: "Novell NetWare executable", extension: "exe" },
-    ".palm.": { description: "PalmOS application", extension: "prc" },
-    ".ole2.": { description: "OLE2 compound document", extension: "doc" },
-    ".rar.": { description: "RAR archive", extension: "rar" },
-    ".win9x.": { description: "Windows 9x executable", extension: "exe" },
-    ".asf.": { description: "ASF media file", extension: "asf" },
-    ".wma.": { description: "Windows Media Audio file", extension: "wma" },
-    ".osx.": { description: "Mac OS X application", extension: "app" },
-    ".winreg.": { description: "Windows Registry file", extension: "reg" },
-    ".j2me.": { description: "Mobile Java application", extension: "jar" },
-    ".winhlp.": { description: "Windows Help file", extension: "hlp" },
-    ".wininf.": { description: "Windows Setup Information file", extension: "inf" },
-    ".winlnk.": { description: "Windows Shortcut file", extension: "lnk" },
-    ".zip.": { description: "ZIP archive", extension: "zip" },
-    ".msaccess.": { description: "Microsoft Access database", extension: "mdb" },
-    ".abap.": { description: "ABAP program file", extension: "abap" },
-    ".1c.": { description: "1C business application file", extension: "1cd" },
-    ".amipro.": { description: "AmiPro document", extension: "wpd" },
-    ".als.": { description: "AutoLISP script", extension: "lsp" },
-    ".boot.": { description: "Embeds into boot", extension: "" },
-    ".ferite.": { description: "Ferite script file", extension: "fer" },
-    ".dos32.": { description: "32-bit DOS executable", extension: "exe" },
-    ".kix.": { description: "KiXtart script", extension: "kix" },
-    ".makefile.": { description: "Makefile script", extension: "mak" },
-    ".matlab.": { description: "MATLAB script", extension: "m" },
-    ".mel.": { description: "Maya Embedded Language script", extension: "mel" },
-    ".menuet.": { description: "MenuetOS executable", extension: "mu" },
-    ".msh.": { description: "PowerShell script", extension: "ps1" },
-    ".msoffice.": { description: "Microsoft Office document", extension: "docx" },
-    ".sgold.": { description: "Presumed Sgold assembler file?", extension: "sgd" },
-    ".staroffice.": { description: "StarOffice document", extension: "sdo" },
-    ".swscript.": { description: "SwScript file", extension: "sws" },
-    ".tsql.": { description: "Transact-SQL script", extension: "sql" },
-    ".wbs.": { description: "Work Breakdown Structure file", extension: "wbs" },
-    ".whs.": { description: "WinHEX script file", extension: "whs" },
-    ".winpif.": { description: "Windows Program Information file", extension: "pif" },
-    ".wince.": { description: "Windows CE application", extension: "exe" },
-    ".irc.": { description: "Spreads through IRC chatrooms", extension: "" },
-    ".bas.": { description: "BASIC script", extension: "bas" },
-    ".ichitaro.": { description: "Ichitaro document", extension: "jtd" },
-    ".androidos.": { description: "Android executable file", extension: "apk" },
-    ".pdf.": { description: "Portable Document Format", extension: "pdf" },
-    ".iphoneos.": { description: "iOS application", extension: "ipa" },
-    ".boot-dos.": { description: "MS-DOS executable", extension: "com" },
-    ".rtf.": { description: "Rich Text Format", extension: "rtf" },
+    ".asp.": { description: "Active Server Pages file", extensions: ["asp", "aspx"] },
+    ".java.": { description: "Java source file", extensions: ["java", "class", "jar"] },
+    ".js.": { description: "JavaScript file", extensions: ["js", "mjs", "jsx"] },
+    ".linux.": { description: "Linux executable", extensions: ["", "bin", "run", "AppImage", "elf"] },
+    ".mac.": { description: "Classic Mac OS application", extensions: ["", "sit", "hqx"] },
+    ".msil.": { description: "Microsoft Intermediate Language file", extensions: ["exe", "dll", "netmodule"] },
+    ".mssql.": { description: "Microsoft SQL Server script", extensions: ["sql", "sqlproj"] },
+    ".msword.": { description: "Microsoft Word 97-2003 document", extensions: ["doc", "dot", "docm", "dotm"] },
+    ".mysql.": { description: "MySQL script", extensions: ["sql", "mysql"] },
+    ".os2.": { description: "OS/2 executable", extensions: ["exe", "cmd"] },
+    ".perl.": { description: "Perl script", extensions: ["pl", "pm", "perl", "plx"] },
+    ".php.": { description: "PHP script", extensions: ["php", "php3", "php4", "php5", "phtml"] },
+    ".python.": { description: "Python script", extensions: ["py", "pyc", "pyo", "pyw", "pyz"] },
+    ".sunos.": { description: "Solaris/SunOS executable", extensions: ["", "sun"] },
+    ".unix.": { description: "Unix shell script", extensions: ["sh", "bash", "csh", "ksh", "zsh", ""] },
+    ".vbs.": { description: "VBScript file", extensions: ["vbs", "vbe", "wsf", "wsh"] },
+    ".win16.": { description: "16-bit Windows executable", extensions: ["exe", "com", "scr"] },
+    ".win32.": { description: "32-bit Windows executable", extensions: ["exe", "dll", "scr", "cpl", "ocx"] },
+    ".win64.": { description: "64-bit Windows executable", extensions: ["exe", "dll", "scr", "sys"] },
+    ".bat.": { description: "Batch file", extensions: ["bat", "cmd"] },
+    ".dos.": { description: "MS-DOS executable", extensions: ["exe", "com", "bat"], keys: [".dos.", ".boot-dos."] },
+    ".html.": { description: "HTML file", extensions: ["html", "htm", "xhtml", "shtml"] },
+    ".multi.": { description: "Multi-platform executable", extensions: ["jar", "war", "ear"] },
+    ".ruby.": { description: "Ruby script", extensions: ["rb", "rbw", "rake", "gemspec"] },
+    ".script.": { description: "Generic script file", extensions: ["", "script", "run"] },
+    ".sap.": { description: "SAP application file", extensions: ["sap", "abap", "sapscript"] },
+    "eicar": { description: "EICAR antivirus test file", extensions: ["com", "txt", "eicar"] },
+    ".pif.": { description: "Program Information File", extensions: ["pif", "exe"] },
+    ".hta.": { description: "HTML Application", extensions: ["hta"] },
+    ".iis.": { description: "Internet Information Services script", extensions: ["asp", "aspx", "ashx", "asmx"] },
+    ".msexcel.": { description: "Microsoft Excel 97-2003 spreadsheet", extensions: ["xls", "xlt", "xlsm", "xltm", "xlam"] },
+    ".msppoint.": { description: "Microsoft PowerPoint 97-2003 presentation", extensions: ["ppt", "pot", "pps", "pptm", "potm", "ppsm"] },
+    ".shell.": { description: "Shell script", extensions: ["sh", "bash", "zsh", "fish", "csh"] },
+    ".swf.": { description: "Adobe Flash file", extensions: ["swf", "fla", "flv"] },
+    ".freebsd.": { description: "FreeBSD executable", extensions: ["", "bin"] },
+    ".symbos.": { description: "Symbian OS application", extensions: ["sis", "sisx", "jar"] },
+    "password-protected": { description: "Password-protected archive or executable", extensions: ["zip", "rar", "7z", "exe", "pdf"] },
+    ".acad.": { description: "AutoCAD script", extensions: ["scr", "lsp", "dcl", "mnl"] },
+    ".ansi.": { description: "ANSI text file", extensions: ["ans", "asc", "txt"] },
+    ".nsis.": { description: "Nullsoft Scriptable Install System script", extensions: ["nsi", "nsh", "exe"] },
+    ".novell.": { description: "Novell NetWare executable", extensions: ["nlm", "exe"] },
+    ".palm.": { description: "Palm OS application", extensions: ["prc", "pdb", "pqa"] },
+    ".ole2.": { description: "OLE2 compound document", extensions: ["doc", "xls", "ppt", "msi", "msp"] },
+    ".rar.": { description: "WinRAR archive", extensions: ["rar", "rev"] },
+    ".win9x.": { description: "Windows 9x executable", extensions: ["exe", "com", "scr", "pif"] },
+    ".asf.": { description: "Advanced Systems Format media file", extensions: ["asf", "wmv", "wma"] },
+    ".wma.": { description: "Windows Media Audio file", extensions: ["wma", "wmv", "asf"] },
+    ".osx.": { description: "Mac OS X application", extensions: ["app", "dmg", "pkg", "mpkg"] },
+    ".winreg.": { description: "Windows Registry file", extensions: ["reg", "pol", "adm"] },
+    ".j2me.": { description: "Java 2 Micro Edition application", extensions: ["jar", "jad", "cod"] },
+    ".winhlp.": { description: "Windows Help file", extensions: ["hlp", "chm", "cnt"] },
+    ".wininf.": { description: "Windows Setup Information file", extensions: ["inf", "cab", "cat"] },
+    ".winlnk.": { description: "Windows Shortcut file", extensions: ["lnk", "url"] },
+    ".zip.": { description: "ZIP archive", extensions: ["zip", "zipx", "jar", "war"] },
+    ".msaccess.": { description: "Microsoft Access database", extensions: ["mdb", "accdb", "mde", "accde", "mda", "adp"] },
+    ".abap.": { description: "Advanced Business Application Programming file", extensions: ["abap", "inc", "prog"] },
+    ".1c.": { description: "1C Enterprise configuration file", extensions: ["cf", "1cd", "dt", "epf"] },
+    ".amipro.": { description: "Lotus AmiPro document", extensions: ["sam", "ami"] },
+    ".als.": { description: "AutoLISP script", extensions: ["lsp", "dcl", "fas", "vlx"] },
+    ".boot.": { description: "Boot sector infector", extensions: ["", "com", "exe"] },
+    ".ferite.": { description: "Ferite script file", extensions: ["fe", "feh"] },
+    ".dos32.": { description: "32-bit DOS extended executable", extensions: ["exe", "com"] },
+    ".kix.": { description: "KiXtart script", extensions: ["kix", "kx32", "kx16"] },
+    ".makefile.": { description: "Make build script", extensions: ["", "mk", "mak", "make"] },
+    ".matlab.": { description: "MATLAB script", extensions: ["m", "mat", "fig", "mlx", "mlapp"] },
+    ".mel.": { description: "Maya Embedded Language script", extensions: ["mel"] },
+    ".menuet.": { description: "MenuetOS executable", extensions: [""] },
+    ".msh.": powershell,
+    ".msoffice.": { description: "Microsoft Office document", extensions: ["docx", "xlsx", "pptx", "doc", "xls", "ppt"] },
+    ".sgold.": { description: "Siemens mobile application", extensions: [""] },
+    ".staroffice.": { description: "Apache OpenOffice document", extensions: ["odt", "ods", "odp", "odg", "odf", "sxw", "sxc", "sxi"] },
+    ".swscript.": { description: "SageScript file", extensions: ["sws"] },
+    ".tsql.": { description: "Transact-SQL script", extensions: ["sql", "tsql"] },
+    ".wbs.": { description: "Work Breakdown Structure file", extensions: ["wbs", "mpp"] },
+    ".whs.": { description: "Windows script file", extensions: ["wsh", "wsf", "js", "vbs"] },
+    ".winpif.": { description: "Windows Program Information File", extensions: ["pif", "exe"] },
+    ".wince.": { description: "Windows CE application", extensions: ["exe", "cab", "inf"] },
+    ".irc.": { description: "IRC worm/trojan", extensions: [""] },
+    ".bas.": { description: "BASIC file", extensions: ["bas", "vb", "frm", "cls"] },
+    ".boot-dos.": { description: "DOS boot sector infector", extensions: ["", "com", "exe"] },
+    ".ichitaro.": { description: "Ichitaro word processor document", extensions: ["jtd", "jtt", "jfw"] },
+    ".androidos.": androidMistake,
+    ".pdf.": { description: "Portable Document Format", extensions: ["pdf"] },
+    ".iphoneos.": { description: "iOS application", extensions: ["ipa", "app", "deb"] },
+    ".rtf.": { description: "Rich Text Format document", extensions: ["rtf"] },
 };
 
 const explorer = document.getElementById("fileExplorer");
@@ -143,7 +146,8 @@ function normalizeFileTypeKey(key) {
 
     const aliases = {
         ".adnroidos.": ".androidos.",
-        ".boot-dos.": ".dos."
+        ".boot-dos.": ".dos.",
+        ".powershell.": ".msh."
     };
 
     return aliases[lookupKey] || lookupKey;
@@ -181,6 +185,31 @@ function buildNestedTreeFromFlatArray(flatArray) {
 
     return root;
 }
+
+/**
+ * Helper function to format extensions for display
+ * @param {Array|string} extensions - The extensions array or single extension
+ * @returns {string} Formatted extension string
+ */
+function formatExtensions(extensions) {
+    if (!extensions) return "";
+    
+    // Handle both old single extension format and new extensions array format
+    if (Array.isArray(extensions)) {
+        // Filter out empty strings and format
+        const validExts = extensions.filter(ext => ext && ext.trim() !== "");
+        if (validExts.length === 0) return "";
+        
+        // Format each extension with a dot prefix, then join with commas
+        return validExts.map(ext => `.${ext}`).join(", ");
+    } else if (typeof extensions === "string" && extensions.trim() !== "") {
+        // Legacy single extension support
+        return `.${extensions}`;
+    }
+    
+    return "";
+}
+
 /**
  * Create a DOM node for folder or file, recursively build children
  */
@@ -232,10 +261,14 @@ function createNode(name, node, depth = 0, search = "") {
             label.appendChild(descSpan);
         }
 
-        if (fileInfo && fileInfo.extension) {
+        // Updated extension handling to support both extensions array and legacy extension
+        const extensions = fileInfo && (fileInfo.extensions || fileInfo.extension);
+        const formattedExtensions = formatExtensions(extensions);
+        
+        if (formattedExtensions) {
             const extSpan = document.createElement("span");
             extSpan.className = "file-extension";
-            extSpan.textContent = ` .${fileInfo.extension}`; // Added leading space for better formatting
+            extSpan.textContent = ` ${formattedExtensions}`;
             label.appendChild(extSpan);
         }
     }
@@ -564,13 +597,17 @@ function populateFilterOptions() {
     sortedEntries.forEach(([key, value]) => {
         const option = document.createElement('option');
         option.value = key; // Set value to the actual internal key (e.g., ".win32.")
-        option.textContent = value.extension ?
-            `${value.description} (.${value.extension})` :
+        
+        // Updated to handle both extensions array and legacy extension
+        const extensions = value.extensions || (value.extension ? [value.extension] : []);
+        const formattedExtensions = formatExtensions(extensions);
+        
+        option.textContent = formattedExtensions ?
+            `${value.description} (${formattedExtensions})` :
             value.description;
         filterField.appendChild(option);
     });
 }
-
 
 // Ensure filter options are populated and explorer is loaded when the DOM is ready
 window.addEventListener("DOMContentLoaded", () => {
