@@ -18,20 +18,67 @@
       min-height: 100vh;
       display: flex;
       flex-direction: column;
-      background-color: #111111;
+      background: radial-gradient(ellipse at top, #1a1a2e 0%, #16213e 35%, #0f0f23 100%);
+      position: relative;
+      overflow-x: hidden;
+    }
+
+    /* Animated background particles */
+    body::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        radial-gradient(2px 2px at 20px 30px, rgba(88, 166, 255, 0.3), transparent),
+        radial-gradient(2px 2px at 40px 70px, rgba(88, 166, 255, 0.2), transparent),
+        radial-gradient(1px 1px at 90px 40px, rgba(88, 166, 255, 0.4), transparent),
+        radial-gradient(1px 1px at 130px 80px, rgba(88, 166, 255, 0.3), transparent),
+        radial-gradient(2px 2px at 160px 30px, rgba(88, 166, 255, 0.2), transparent);
+      background-repeat: repeat;
+      background-size: 200px 100px;
+      animation: float 20s infinite linear;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    @keyframes float {
+      0% { transform: translateY(0px) translateX(0px); }
+      33% { transform: translateY(-10px) translateX(10px); }
+      66% { transform: translateY(5px) translateX(-5px); }
+      100% { transform: translateY(0px) translateX(0px); }
     }
 
     header {
-      background: linear-gradient(90deg, #000000, #050505);
+      background: rgba(0, 0, 0, 0.3);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(88, 166, 255, 0.1);
       padding: 20px 40px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid #30363d;
+      border-bottom: 1px solid rgba(48, 54, 61, 0.5);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      transition: all 0.3s ease;
+    }
+
+    header:hover {
+      background: rgba(0, 0, 0, 0.4);
+      border-color: rgba(88, 166, 255, 0.2);
     }
 
     header img.logo {
       height: 40px;
+      filter: drop-shadow(0 0 10px rgba(88, 166, 255, 0.5));
+      transition: filter 0.3s ease;
+    }
+
+    header img.logo:hover {
+      filter: drop-shadow(0 0 20px rgba(88, 166, 255, 0.8));
     }
 
     header nav a {
@@ -39,11 +86,34 @@
       text-decoration: none;
       margin-left: 25px;
       font-weight: 600;
-      transition: color 0.3s ease;
+      transition: all 0.3s ease;
+      position: relative;
+      padding: 8px 16px;
+      border-radius: 25px;
+    }
+
+    header nav a::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(45deg, rgba(88, 166, 255, 0.1), rgba(31, 111, 235, 0.1));
+      border-radius: 25px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: -1;
     }
 
     header nav a:hover {
-      color: #1f6feb;
+      color: #ffffff;
+      text-shadow: 0 0 10px rgba(88, 166, 255, 0.8);
+      transform: translateY(-2px);
+    }
+
+    header nav a:hover::before {
+      opacity: 1;
     }
 
     main {
@@ -51,17 +121,56 @@
       max-width: 900px;
       margin: 40px auto;
       padding: 0 20px;
+      animation: fadeInUp 0.8s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .hero {
       text-align: center;
       margin-bottom: 60px;
+      position: relative;
+    }
+
+    .hero::before {
+      content: '';
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 300px;
+      height: 300px;
+      background: radial-gradient(circle, rgba(88, 166, 255, 0.1) 0%, transparent 70%);
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      z-index: -1;
+      animation: pulse 4s infinite ease-in-out;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.3; }
+      50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.6; }
     }
 
     .hero h1 {
       font-size: 3rem;
       margin-bottom: 15px;
       color: #58a6ff;
+      text-shadow: 0 0 20px rgba(88, 166, 255, 0.5);
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    @keyframes glow {
+      from { text-shadow: 0 0 20px rgba(88, 166, 255, 0.5); }
+      to { text-shadow: 0 0 30px rgba(88, 166, 255, 0.8), 0 0 40px rgba(88, 166, 255, 0.3); }
     }
 
     .hero p {
@@ -69,41 +178,149 @@
       color: #8b949e;
       max-width: 600px;
       margin: 0 auto;
+      animation: slideIn 1s ease-out 0.3s both;
     }
-    .wrapper{
-        flex: 1;          /* takes all available space between header and footer */
-        background: linear-gradient(180deg, #000000, #161b22);
-        display: flex;
-        justify-content: center;
-        padding: 40px 20px;
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(-30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+
+    .wrapper {
+      flex: 1;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.2), rgba(22, 27, 34, 0.3));
+      display: flex;
+      justify-content: center;
+      padding: 40px 20px;
+      position: relative;
     }
 
     section {
       margin-bottom: 60px;
+      background: rgba(22, 27, 34, 0.3);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(88, 166, 255, 0.1);
+      border-radius: 20px;
+      padding: 30px;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, rgba(88, 166, 255, 0.8), transparent);
+      transition: left 0.5s ease;
+    }
+
+    section:hover {
+      transform: translateY(-5px);
+      background: rgba(22, 27, 34, 0.5);
+      border-color: rgba(88, 166, 255, 0.3);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3), 0 0 30px rgba(88, 166, 255, 0.1);
+    }
+
+    section:hover::before {
+      left: 100%;
     }
 
     section h2 {
       font-size: 2rem;
       margin-bottom: 15px;
-      border-bottom: 2px solid #58a6ff;
+      border-bottom: 2px solid transparent;
+      background: linear-gradient(90deg, #58a6ff, #1f6feb);
+      background-clip: text;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
       padding-bottom: 5px;
-      color: #58a6ff;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    section h2::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #58a6ff, #1f6feb);
+      transition: width 0.3s ease;
+    }
+
+    section:hover h2::after {
+      width: 100%;
     }
 
     section p {
       font-size: 1rem;
       color: #c9d1d9;
       max-width: 700px;
+      transition: color 0.3s ease;
+    }
+
+    section:hover p {
+      color: #ffffff;
+    }
+
+    section p a {
+      color: #58a6ff;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      position: relative;
+    }
+
+    section p a::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 1px;
+      background: #58a6ff;
+      transition: width 0.3s ease;
+    }
+
+    section p a:hover::after {
+      width: 100%;
     }
 
     footer {
-      background-color: #161b22;
+      background: rgba(22, 27, 34, 0.8);
+      backdrop-filter: blur(20px);
       text-align: center;
       padding: 20px;
-      border-top: 1px solid #30363d;
+      border-top: 1px solid rgba(48, 54, 61, 0.5);
       color: #8b949e;
       font-size: 0.9rem;
       user-select: none;
+      position: relative;
+    }
+
+    footer::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(88, 166, 255, 0.5), transparent);
+    }
+
+    /* Hover effect for all interactive elements */
+    * {
+      transition: transform 0.2s ease;
     }
 
     /* Responsive */
@@ -125,6 +342,32 @@
       main {
         margin: 20px 10px;
       }
+
+      .hero h1 {
+        font-size: 2rem;
+      }
+
+      section {
+        padding: 20px;
+      }
+    }
+
+    /* Custom scrollbar */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: rgba(22, 27, 34, 0.3);
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(88, 166, 255, 0.5);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(88, 166, 255, 0.8);
     }
   </style>
 </head>
@@ -136,7 +379,7 @@
     <a href="#about">About</a>
     <a href="#projects">Projects</a>
     <a href="#contact">Contact</a>
-    <a href="https://ethereal-organization.github.io/search">Omega Threat Archive</a>
+    <a href="https://ethereal-organization.github.io/ota">Omega Threat Archive</a>
   </nav>
 </header>
 
@@ -159,7 +402,7 @@
     
       <section id="contact" aria-label="Contact Ethereal">
         <h2>Contact Us</h2>
-        <p>Have questions or want to collaborate? Reach out via <a href="https://github.com/ethereal-organization" target="_blank" rel="noopener" style="color:#58a6ff;">GitHub</a>.</p>
+        <p>Have questions or want to collaborate? Reach out via <a href="https://github.com/ethereal-organization" target="_blank" rel="noopener">GitHub</a>.</p>
       </section>
     </main>
 </div>
