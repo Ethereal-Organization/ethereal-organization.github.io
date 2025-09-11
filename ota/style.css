@@ -25,12 +25,8 @@
     --border-radius: 6px;
     --transition-fast: 0.3s;
 }
-
 body {
-    background: 
-        radial-gradient(ellipse at 20% 50%, rgba(88, 166, 255, 0.05) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 20%, rgba(59, 130, 246, 0.05) 0%, transparent 50%),
-        linear-gradient(180deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+    background: linear-gradient(180deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
     color: var(--text-color);
     font-family: var(--font-family);
     padding: var(--container-padding);
@@ -41,93 +37,39 @@ body {
     scrollbar-width: thin;
     font-weight: 400;
     animation: fadeSlideUp 0.6s ease forwards;
-    position: relative;
-    min-height: 100vh;
-}
-
-/* Animated background particles */
-body::before {
-    content: '';
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: 
-        radial-gradient(1px 1px at 10px 20px, rgba(88, 166, 255, 0.2), transparent),
-        radial-gradient(1px 1px at 40px 80px, rgba(59, 130, 246, 0.15), transparent),
-        radial-gradient(2px 2px at 90px 10px, rgba(88, 166, 255, 0.25), transparent);
-    background-repeat: repeat;
-    background-size: 120px 120px;
-    animation: floatParticles 15s infinite linear;
-    pointer-events: none;
-    z-index: -1;
-    opacity: 0.6;
-}
-
-@keyframes floatParticles {
-    0% { transform: translateY(0px) translateX(0px); }
-    33% { transform: translateY(-8px) translateX(5px); }
-    66% { transform: translateY(3px) translateX(-3px); }
-    100% { transform: translateY(0px) translateX(0px); }
 }
 
 body::-webkit-scrollbar {
-    width: 10px;
-}
-
-body::-webkit-scrollbar-track {
-    background: rgba(22, 27, 34, 0.5);
-    border-radius: 5px;
+    width: 8px;
 }
 
 body::-webkit-scrollbar-thumb {
     background: linear-gradient(270deg, #58a6ff, #3b82f6, #58a6ff);
     background-size: 400% 400%;
     animation: scrollbarShimmer 4s ease infinite;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(88, 166, 255, 0.3);
-}
-
-body::-webkit-scrollbar-thumb:hover {
-    box-shadow: 0 0 15px rgba(88, 166, 255, 0.6);
+    border-radius: 4px;
 }
 
 /* --- Header & Navigation --- */
 header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    display: flex; /* Use flexbox for horizontal alignment of image and nav */
+    justify-content: space-between; /* Pushes content to the ends */
+    align-items: center; /* Vertically aligns items */
     margin-bottom: 5px;
-    padding: 15px 30px;
-    background: 
-        url("https://raw.githubusercontent.com/Ethereal-Organization/.github/7bbe128d0eb4f896e0f5e8986117a78881537cb8/ota.png") no-repeat left center,
-        linear-gradient(135deg, rgba(22, 27, 34, 0.8), rgba(13, 17, 23, 0.9));
-    background-size: contain, cover;
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(88, 166, 255, 0.1);
-    color: white;
+    padding: 5px 20px; /* Adjusted padding for better fit with content */
+    background: url("https://raw.githubusercontent.com/Ethereal-Organization/.github/7bbe128d0eb4f896e0f5e8986117a78881537cb8/ota.png") no-repeat left center;
+    background-size: contain;
+    color: white; /* This color may not be visible if background has overlay */
     font-size: 1.5rem;
     font-weight: 700;
-    border-radius: 12px;
+    border-radius: 8px;
     user-select: none;
     position: relative;
-    min-height: 80px;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    box-shadow: 
-        0 8px 32px rgba(0, 0, 0, 0.3),
-        0 0 20px rgba(88, 166, 255, 0.1);
+    min-height: 80px; /* Adjusted minimum height */
+    overflow: hidden; /* Important for background image */
 }
 
-header:hover {
-    transform: translateY(-2px);
-    box-shadow: 
-        0 12px 48px rgba(0, 0, 0, 0.4),
-        0 0 30px rgba(88, 166, 255, 0.2);
-    border-color: rgba(88, 166, 255, 0.2);
-}
-
+/* Pseudo-element to ensure text visibility over header background image */
 header::before {
     content: "";
     position: absolute;
@@ -135,82 +77,43 @@ header::before {
     left: 0;
     right: 0;
     bottom: 0;
-    background: linear-gradient(45deg, transparent, rgba(88, 166, 255, 0.05), transparent);
-    border-radius: 12px;
+    border-radius: 8px;
     z-index: 0;
-    animation: headerShimmer 3s ease-in-out infinite;
 }
 
-@keyframes headerShimmer {
-    0%, 100% { opacity: 0; }
-    50% { opacity: 1; }
-}
-
-header .project {
-    max-height: 40px;
-    position: relative;
+header .project { /* Your project.png image */
+    max-height: 40px; /* Adjust as needed for the image */
+    position: relative; /* Ensure it's above the pseudo-element */
     margin-left: auto;
     z-index: 1;
-    filter: drop-shadow(0 0 10px rgba(88, 166, 255, 0.5));
-    transition: filter 0.3s ease;
-}
-
-header .project:hover {
-    filter: drop-shadow(0 0 15px rgba(88, 166, 255, 0.8));
 }
 
 header nav ul {
-    list-style: none;
+    list-style: none; /* Removes bullet points from the list */
     margin: 0;
     padding: 0;
-    display: flex;
-    gap: 20px;
-    position: relative;
+    display: flex; /* Makes the list items align horizontally */
+    gap: 20px; /* Space between links */
+    position: relative; /* Ensure it's above the pseudo-element */
     z-index: 1;
 }
 
 header nav ul li a {
-    text-decoration: none;
-    color: var(--primary-accent);
+    text-decoration: none; /* Removes underline from links */
+    color: var(--primary-accent); /* Example link color */
     font-weight: bold;
     font-size: 1.1em;
-    padding: 8px 16px;
-    border-radius: 20px;
-    transition: all 0.3s ease;
-    position: relative;
-    backdrop-filter: blur(10px);
-    background: rgba(88, 166, 255, 0.05);
-    border: 1px solid transparent;
-}
-
-header nav ul li a::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: linear-gradient(45deg, rgba(88, 166, 255, 0.1), rgba(59, 130, 246, 0.1));
-    border-radius: 20px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-    z-index: -1;
+    padding: 5px 10px;
+    transition: color 0.3s ease, background-color 0.3s ease;
 }
 
 header nav ul li a:hover {
-    color: #ffffff;
-    background: rgba(88, 166, 255, 0.15);
-    border-color: rgba(88, 166, 255, 0.3);
-    transform: translateY(-2px) scale(1.05);
-    text-shadow: 0 0 10px rgba(88, 166, 255, 0.8);
-    box-shadow: 0 8px 25px rgba(88, 166, 255, 0.3);
+    color: #409cff; /* Darker color on hover */
+    background-color: rgba(88, 166, 255, 0.1); /* Subtle background on hover */
+    border-radius: 4px;
 }
 
-header nav ul li a:hover::before {
-    opacity: 1;
-}
-
-/* Link underline slide effect */
+/* Link underline slide effect (general for all 'a' tags) */
 a {
     color: var(--primary-accent);
     text-decoration: none;
@@ -225,11 +128,10 @@ a::after {
     bottom: -2px;
     width: 100%;
     height: 2px;
-    background: linear-gradient(90deg, var(--primary-accent), #3b82f6);
+    background: var(--primary-accent);
     transform: scaleX(0);
     transform-origin: right;
     transition: transform 0.3s ease;
-    border-radius: 1px;
 }
 
 a:hover::after,
@@ -240,283 +142,189 @@ a:focus::after {
 
 /* --- Notice Bar --- */
 .notice-bar {
-    background: linear-gradient(135deg, #ffda00, #ffd700);
+    background-color: #ffda00; /* Yellow background for a warning */
     padding: 10px 20px;
     text-align: center;
     font-size: 0.95em;
     position: relative;
-    display: flex;
+    display: flex; /* Keep display:flex for initial layout */
     align-items: center;
     justify-content: center;
     gap: 15px;
-    box-shadow: 
-        0 4px 15px rgba(255, 218, 0, 0.3),
-        0 2px 5px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     z-index: 1000;
-    margin-bottom: 10px;
-    border-radius: 8px;
-    border: 1px solid rgba(255, 215, 0, 0.5);
-    max-height: 60px;
+    margin-bottom: 10px; /* Space below the notice bar */
+
+    /* Animation properties */
+    max-height: 60px; /* Adjust this based on actual content height (approx 2 lines of text) */
     opacity: 1;
-    overflow: hidden;
-    transition: max-height 0.5s ease-out, opacity 0.5s ease-out, 
-                padding 0.5s ease-out, margin 0.5s ease-out;
+    overflow: hidden; /* Crucial for max-height transition to work cleanly */
+    transition: max-height 0.5s ease-out, opacity 0.5s ease-out, padding 0.5s ease-out, margin 0.5s ease-out;
 }
 
-.notice-bar::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s ease;
-    animation: noticeShine 3s ease-in-out infinite;
-}
-
-@keyframes noticeShine {
-    0% { left: -100%; }
-    50% { left: -100%; }
-    100% { left: 100%; }
-}
-
+/* State when closing */
 .notice-bar.closing {
     max-height: 0;
     opacity: 0;
-    padding-top: 0;
-    padding-bottom: 0;
-    margin-bottom: 0;
+    padding-top: 0; /* Animate padding out */
+    padding-bottom: 0; /* Animate padding out */
+    margin-bottom: 0; /* Animate margin out */
 }
 
 .notice-bar p {
     margin: 0;
     flex-grow: 1;
-    color: #000;
+    color: #000; /* Dark text for contrast on yellow background */
     font-weight: bolder;
-    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
 }
 
 .notice-bar-close {
-    background: rgba(0, 0, 0, 0.1);
+    background: none;
     border: none;
     font-size: 1.5em;
     font-weight: bold;
     color: #333;
     cursor: pointer;
-    padding: 5px 8px;
-    border-radius: 50%;
+    padding: 0 5px;
     line-height: 1;
-    transition: all 0.2s ease;
+    transition: color 0.2s ease;
 }
 
 .notice-bar-close:hover {
-    background: rgba(0, 0, 0, 0.2);
     color: #000;
-    transform: scale(1.1);
 }
 
 /* --- Main Layout & Controls --- */
 main {
-    padding-top: 10px;
-    position: relative;
+    padding-top: 10px; /* Space from header/notice bar */
 }
 
 .search-controls {
-    display: block;
+    display: block; /* Label on its own line */
     margin-bottom: 20px;
-    background: rgba(22, 27, 34, 0.3);
-    backdrop-filter: blur(15px);
-    padding: 20px;
-    border-radius: 12px;
-    border: 1px solid rgba(88, 166, 255, 0.1);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-    transition: all 0.3s ease;
-}
-
-.search-controls:hover {
-    border-color: rgba(88, 166, 255, 0.2);
-    box-shadow: 0 12px 48px rgba(0, 0, 0, 0.4);
 }
 
 .search-controls label {
-    display: block;
-    margin-bottom: 10px;
+    display: block; /* Ensures the label takes its own line */
+    margin-bottom: 5px; /* Space between label and the search input/button group */
     font-weight: bold;
     color: var(--dim-text);
-    font-size: 1.1em;
-    text-shadow: 0 0 10px rgba(88, 166, 255, 0.3);
 }
 
 .search-input-group {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-    width: 100%;
+    display: flex; /* Make the input and button align horizontally */
+    gap: 10px; /* Space between the search bar and filter button */
+    align-items: center; /* Vertically aligns them */
+    width: 100%; /* Ensure the group takes full width */
 }
 
 #searchBar {
-    flex-grow: 1;
-    width: auto;
-    min-width: 150px;
-    padding: 12px 16px;
-    background: rgba(22, 27, 34, 0.8);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(48, 54, 61, 0.5);
-    border-radius: 25px;
+    flex-grow: 1; /* Allow search bar to take up available space */
+    width: auto; /* Override previous fixed width */
+    min-width: 150px; /* Minimum width before shrinking */
+    
+    padding: 10px;
+    background-color: #161b22;
+    border: 1px solid #30363d;
+    border-radius: var(--border-radius);
     color: var(--text-color);
     font-size: 16px;
-    box-shadow: 
-        inset 0 2px 4px rgba(0, 0, 0, 0.1),
-        0 2px 8px rgba(0, 0, 0, 0.3);
-    transition: all 0.4s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transition: box-shadow 0.4s ease, border-color 0.4s ease;
+    /* Removed sticky properties as they are not needed here if parent is not sticky */
     position: relative;
-}
-
-#searchBar::placeholder {
-    color: rgba(139, 148, 158, 0.7);
-    transition: color 0.3s ease;
+    top: auto;
+    z-index: auto;
 }
 
 #searchBar:focus {
     outline: none;
     border-color: var(--primary-accent);
-    box-shadow: 
-        0 0 20px rgba(88, 166, 255, 0.4),
-        inset 0 2px 4px rgba(0, 0, 0, 0.1);
-    background: rgba(22, 27, 34, 0.95);
+    box-shadow: 0 0 12px var(--primary-accent);
 }
 
-#searchBar:focus::placeholder {
-    color: rgba(139, 148, 158, 0.5);
-}
-
+/* Style the filter section to be initially hidden */
 .filter-section {
-    display: none;
+    display: none; /* Hide filter section by default */
     margin-bottom: 10px;
-    padding: 15px;
-    background: rgba(13, 17, 23, 0.5);
-    border-radius: 8px;
-    border: 1px solid rgba(88, 166, 255, 0.1);
-    animation: slideDown 0.3s ease;
 }
 
+/* Style when the filter section is expanded */
 .filter-section.expanded {
-    display: block;
+    display: block; /* Show when 'expanded' class is added by JS */
 }
 
-@keyframes slideDown {
-    from {
-        opacity: 0;
-        max-height: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        max-height: 200px;
-        transform: translateY(0);
-    }
-}
-
-/* --- Enhanced Button Styles --- */
+/* --- Consolidated Button Styles --- */
 .filter-toggle,
 .settings-button,
 .show-more-button {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 12px 20px;
-    background: linear-gradient(135deg, #2c323c, #1b1f28);
-    color: var(--primary-accent);
+    padding: 10px 15px; /* Unified padding for a consistent height/width feel */
+    background: linear-gradient(135deg, #2c323c, #1b1f28); /* Your common dark gradient */
+    color: var(--primary-accent); /* Primary accent color for text */
     font-weight: 600;
-    font-size: 1em;
-    border-radius: 25px;
-    border: 1px solid var(--primary-accent);
+    font-size: 1em; /* Unified font size */
+    border-radius: var(--border-radius); /* Consistent border-radius */
+    border: 1px solid var(--primary-accent); /* Consistent border color */
     cursor: pointer;
     user-select: none;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    box-shadow: 
-        0 4px 15px rgba(88, 166, 255, 0.2),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-    flex-shrink: 0;
-    position: relative;
-    overflow: hidden;
+    transition:
+        background 0.3s ease, /* Transition for background gradient */
+        box-shadow 0.3s ease,
+        transform 0.2s ease,
+        color 0.3s ease; /* Transition for text color */
+    box-shadow: 0 0 6px rgba(88, 166, 255, 0.4); /* Consistent initial glow */
+    flex-shrink: 0; /* Important for flex containers: prevents buttons from shrinking */
 }
 
-.filter-toggle::before,
-.settings-button::before,
-.show-more-button::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
-    transition: left 0.5s ease;
-}
-
+/* Hover State for ALL Buttons */
 .filter-toggle:hover,
 .settings-button:hover,
 .show-more-button:hover {
-    background: linear-gradient(135deg, #58a6ff, #3b82f6);
-    box-shadow: 
-        0 8px 25px rgba(88, 166, 255, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    transform: translateY(-2px) scale(1.05);
-    color: #ffffff;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+    background: linear-gradient(135deg, #58a6ff, #1e2a4d); /* Brighter gradient on hover */
+    box-shadow: 0 0 12px 2px var(--primary-accent); /* Stronger glow on hover */
+    transform: scale(1.05); /* Slight grow effect */
+    color: #ffffff; /* White text on hover */
 }
 
-.filter-toggle:hover::before,
-.settings-button:hover::before,
-.show-more-button:hover::before {
-    left: 100%;
-}
-
+/* Active State for ALL Buttons */
 .filter-toggle:active,
 .settings-button:active,
 .show-more-button:active {
-    transform: translateY(0) scale(0.98);
-    box-shadow: 0 4px 15px rgba(88, 166, 255, 0.3);
+    transform: scale(0.95); /* Slight press effect */
+    box-shadow: 0 0 8px var(--primary-accent); /* Reduced glow on active */
 }
 
+/* Focus State for ALL Buttons */
+.filter-toggle:focus,
+.settings-button:focus,
+.show-more-button:focus {
+    outline: none;
+    box-shadow: 0 0 14px 3px var(--primary-accent); /* Strong focus glow */
+}
+
+/* Specific Margin Adjustments (these override the base for specific elements) */
 .show-more-button {
-    margin: 20px auto;
-    animation: pulseGlow 2s infinite ease-in-out;
+    margin: 20px auto; /* Centered margin for show-more */
 }
 
 .settings-button {
-    margin: 5px 5px;
+    margin: 5px 5px; /* Specific margin for settings button */
 }
 
 .settings {
     display: none;
-    margin-top: 15px;
-    padding: 20px;
-    background: rgba(22, 27, 34, 0.5);
-    border-radius: 12px;
-    border: 1px solid rgba(88, 166, 255, 0.1);
-    backdrop-filter: blur(10px);
+    margin-top: 10px;
 }
 
+/* Show settings when .expanded class is added */
 .settings.expanded {
     display: block;
-    animation: expandSettings 0.4s ease;
 }
 
-@keyframes expandSettings {
-    from {
-        opacity: 0;
-        transform: scaleY(0.8);
-    }
-    to {
-        opacity: 1;
-        transform: scaleY(1);
-    }
-}
-
-/* --- Enhanced Explorer & File/Folder Items --- */
+/* --- Explorer & File/Folder Items --- */
 .explorer {
     font-size: var(--font-size);
     line-height: 1.8;
@@ -529,200 +337,158 @@ main {
 .file {
     display: flex;
     align-items: center;
-    padding: 10px 15px;
-    border-radius: 12px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 6px 10px;
+    border-radius: var(--border-radius);
+    transition:
+        transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+        box-shadow var(--transition-fast) ease,
+        background-color var(--transition-fast) ease,
+        color 0.3s ease;
     white-space: nowrap;
     cursor: pointer;
     position: relative;
-    background: rgba(22, 27, 34, 0.2);
-    border: 1px solid transparent;
-    margin-bottom: 4px;
-    overflow: hidden;
-}
-
-.folder::before,
-.file::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(88, 166, 255, 0.1), transparent);
-    transition: left 0.5s ease;
-    z-index: 0;
 }
 
 .folder:hover,
 .file:hover {
-    background: rgba(44, 50, 60, 0.8);
-    transform: translateX(8px) scale(1.02);
-    box-shadow: 
-        0 8px 25px rgba(88, 166, 255, 0.3),
-        0 0 20px rgba(88, 166, 255, 0.2);
-    border-color: rgba(88, 166, 255, 0.3);
+    background-color: var(--folder-hover-bg);
+    transform: translateX(6px) scale(1.03);
+    box-shadow: 0 0 15px var(--folder-shadow);
+    animation: pulseGlow 1.5s infinite alternate ease-in-out;
     color: #8ec9ff;
-    backdrop-filter: blur(10px);
-}
-
-.folder:hover::before,
-.file:hover::before {
-    left: 100%;
 }
 
 .folder:active,
 .file:active {
-    transform: translateX(8px) scale(0.98);
-    box-shadow: 0 4px 15px rgba(88, 166, 255, 0.4);
+    transform: scale(0.96);
+    box-shadow: 0 0 20px var(--primary-accent);
 }
 
 .icon {
-    margin-right: 12px;
+    margin-right: 8px;
     width: 20px;
     text-align: center;
     flex-shrink: 0;
     color: var(--dim-text);
-    transition: all 0.3s ease;
-    z-index: 1;
+    transition: color var(--transition-fast) ease;
 }
 
 .folder:hover .icon,
 .file:hover .icon {
     color: var(--primary-accent);
-    text-shadow: 0 0 10px rgba(88, 166, 255, 0.8);
-    transform: scale(1.1);
 }
 
 .filename {
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 8px; /* space between filename text and badges */
     flex-grow: 1;
     font-weight: 500;
     color: #d1d5db;
     position: relative;
-    z-index: 1;
-    transition: color 0.3s ease;
+    /* Remove redundant forced alignment from previous iterations */
 }
 
-/* Enhanced file description badge */
+/* Fancy file description badge */
 .file-description {
     font-weight: 600;
     color: var(--file-desc-color);
     background: linear-gradient(135deg, var(--file-desc-bg1), var(--file-desc-bg2));
-    padding: 4px 12px;
-    border-radius: 15px;
+    padding: 2px 8px;
+    border-radius: var(--border-radius);
     font-size: 12px;
     user-select: none;
     white-space: nowrap;
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    transition: all 0.3s ease;
+    gap: 4px;
+    transition: background-color var(--transition-fast) ease, color var(--transition-fast) ease, transform 0.25s ease;
     cursor: default;
-    margin-left: auto;
-    order: 9999;
-    flex-shrink: 0;
-    border: 1px solid rgba(59, 130, 246, 0.2);
-    backdrop-filter: blur(5px);
-    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.1);
-    z-index: 1;
+    
+    /* Ensure it aligns to the right naturally within flex */
+    margin-left: auto; 
+    order: 9999; /* put it last in flex order */
+    flex-shrink: 0; /* prevent shrinking */
+    /* Removed !important for better maintainability if possible, relying on flexbox */
+    position: static; /* Reset from relative if needed */
+    right: auto; /* Reset from 0 */
+    float: none; /* Reset from float */
+    text-align: left; /* Reset from right */
+    max-width: none; /* Reset from 100% */
 }
 
 .file-description::before {
     content: "ℹ️";
     font-size: 12px;
-    filter: drop-shadow(0 0 3px rgba(59, 130, 246, 0.5));
 }
 
 .file-description:hover {
     animation: bounceBadge 0.6s ease forwards;
     background: linear-gradient(135deg, #60a5fa, #3b82f6);
     color: white;
-    box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
-    transform: scale(1.05);
 }
 
-/* Enhanced file extension badge */
+/* Fancy file extension badge */
 .file-extension {
-    font-family: var(--font-family);
+    font-family: var(--font-family); /* Use theme font */
     font-size: 12px;
     line-height: 1.8;
     cursor: pointer;
     font-weight: 600;
-    color: var(--primary-accent);
-    background: linear-gradient(135deg, rgba(37, 99, 235, 0.15), rgba(37, 99, 235, 0.05));
-    padding: 4px 10px;
-    border-radius: 12px;
+    color: var(--primary-accent); /* Using var for consistency */
+    background-color: rgba(37, 99, 235, 0.1);
+    padding: 2px 6px;
+    border-radius: var(--border-radius);
     user-select: none;
     white-space: nowrap;
-    transition: all 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.3s ease;
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    flex-shrink: 0;
-    order: 9999;
-    border: 1px solid rgba(88, 166, 255, 0.2);
-    backdrop-filter: blur(5px);
-    box-shadow: 0 2px 8px rgba(88, 166, 255, 0.1);
-    z-index: 1;
+    
+    /* Ensure it aligns after the description badge */
+    flex-shrink: 0; /* prevent shrinking */
+    /* Removed !important for better maintainability if possible, relying on flexbox */
+    position: static; /* Reset from relative if needed */
+    right: auto; /* Reset from 0 */
+    float: none; /* Reset from float */
+    text-align: left; /* Reset from right */
+    max-width: none; /* Reset from 100% */
+    order: 9999; /* Maintain last order in flex after description */
 }
 
 .file-extension:hover {
     animation: bounceBadge 0.6s ease forwards;
-    background: linear-gradient(135deg, rgba(88, 166, 255, 0.4), rgba(37, 99, 235, 0.3));
+    background-color: rgba(37, 99, 235, 0.25);
     color: white;
     transform: scale(1.1);
-    box-shadow: 0 4px 15px rgba(88, 166, 255, 0.4);
 }
 
-/* --- Enhanced Spinner --- */
+/* --- Spinner --- */
 .spinner {
-    border: 4px solid rgba(48, 54, 61, 0.3);
+    border: 4px solid #30363d;
     border-top: 4px solid var(--primary-accent);
     border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    animation: spin 1s linear infinite, spinGlow 2s ease-in-out infinite alternate;
-    margin: 20px auto;
+    width: 30px;
+    height: 30px;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 20px;
     display: none;
-    position: relative;
 }
 
-.spinner::after {
-    content: '';
-    position: absolute;
-    top: -4px;
-    left: -4px;
-    right: -4px;
-    bottom: -4px;
-    border-radius: 50%;
-    background: conic-gradient(transparent, rgba(88, 166, 255, 0.3));
-    animation: spin 2s linear infinite reverse;
-    z-index: -1;
-}
-
-@keyframes spinGlow {
-    0% { box-shadow: 0 0 10px rgba(88, 166, 255, 0.3); }
-    100% { box-shadow: 0 0 20px rgba(88, 166, 255, 0.6); }
-}
-
-/* --- Enhanced Select Dropdowns --- */
+/* --- Select Dropdowns (Items Per Page & Filter Field) --- */
 #itemsPerPage,
 #filterField {
+    /* Removed position: sticky, top, z-index as it conflicts with flex layout if not carefully applied */
     width: 100%;
-    padding: 12px 45px 12px 16px;
-    background: rgba(22, 27, 34, 0.8);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(48, 54, 61, 0.5);
-    border-radius: 12px;
+    padding: 8px 40px 8px 12px;
+    background-color: #161b22;
+    border: 1px solid #30363d;
+    border-radius: var(--border-radius);
     color: var(--text-color);
     margin-bottom: 20px;
     font-size: 16px;
-    box-shadow: 
-        inset 0 2px 4px rgba(0, 0, 0, 0.1),
-        0 2px 8px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
     font-family: var(--font-family);
     cursor: pointer;
     appearance: none;
@@ -730,92 +496,28 @@ main {
     -moz-appearance: none;
     background-image: url("data:image/svg+xml;charset=US-ASCII,%3csvg%20width%3d'10'%20height%3d'5'%20viewBox%3d'0%200%2010%205'%20xmlns%3d'http%3a//www.w3.org/2000/svg'%3e%3cpolygon%20points%3d'0,0%2010,0%205,5'%20fill%3d'%2366aaff'%20/%3e%3c/svg%3e");
     background-repeat: no-repeat;
-    background-position: right 16px center;
-    background-size: 12px 6px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background-position: right 12px center;
+    background-size: 10px 5px;
+    transition:
+        background-color 0.3s ease,
+        border-color 0.3s ease,
+        box-shadow 0.3s ease,
+        color 0.3s ease,
+        transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     outline-offset: 3px;
 }
 
-#itemsPerPage:hover,
-#filterField:hover {
-    border-color: rgba(88, 166, 255, 0.3);
-    box-shadow: 
-        inset 0 2px 4px rgba(0, 0, 0, 0.1),
-        0 4px 15px rgba(0, 0, 0, 0.4),
-        0 0 10px rgba(88, 166, 255, 0.2);
-}
-
+/* Input focus ring (general for all inputs, selects, textareas) */
 input:focus,
 select:focus,
 textarea:focus {
     outline: none;
-    box-shadow: 
-        0 0 20px rgba(88, 166, 255, 0.4),
-        inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0 6px var(--primary-accent);
     border-color: var(--primary-accent);
     transition: box-shadow 0.3s ease, border-color 0.3s ease;
 }
 
-/* Header controls container */
-.header-controls {
-    position: sticky;
-    top: 0;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    padding: 15px var(--container-padding);
-    background: 
-        linear-gradient(180deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
-    backdrop-filter: blur(20px);
-    z-index: 1000;
-    border-bottom: 1px solid rgba(48, 54, 61, 0.5);
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.3);
-}
-
-/* Enhanced download button */
-#download-queue-btn {
-    position: static;
-    margin-left: auto;
-    padding: 10px 20px;
-    font-size: 14px;
-    background: linear-gradient(135deg, #444, #333);
-    color: #eee;
-    border: 1px solid rgba(88, 166, 255, 0.3);
-    border-radius: 20px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    box-shadow: 
-        0 4px 15px rgba(0, 0, 0, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
-#download-queue-btn:hover {
-    background: linear-gradient(135deg, #58a6ff, #3b82f6);
-    color: white;
-    transform: translateY(-2px);
-    box-shadow: 
-        0 8px 25px rgba(88, 166, 255, 0.4),
-        inset 0 1px 0 rgba(255, 255, 255, 0.2);
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
-}
-
-#download-queue-btn:active {
-    transform: translateY(0);
-    box-shadow: 
-        0 4px 15px rgba(88, 166, 255, 0.3),
-        inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
-
-/* Adjust main content spacing */
-main {
-    padding-top: 0px;
-}
-
-/* --- Enhanced Keyframe Animations --- */
+/* --- Keyframe Animations --- */
 @keyframes spin {
     0% { transform: rotate(0deg); }
     100% { transform: rotate(360deg); }
@@ -823,251 +525,63 @@ main {
 
 @keyframes scrollbarShimmer {
     0% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
-    100% { background-position: 200% 50%; }
+    100% { background-position: 400% 50%; }
 }
 
 @keyframes pulseGlow {
-    0% { 
-        box-shadow: 0 0 8px rgba(88, 166, 255, 0.3);
-    }
-    50% { 
-        box-shadow: 0 0 25px rgba(88, 166, 255, 0.6), 
-                    0 0 35px rgba(88, 166, 255, 0.3);
-    }
-    100% { 
-        box-shadow: 0 0 8px rgba(88, 166, 255, 0.3);
-    }
+    0% { box-shadow: 0 0 8px var(--primary-accent); }
+    100% { box-shadow: 0 0 20px var(--primary-accent); }
 }
 
 @keyframes fadeSlideUp {
-    0% { 
-        opacity: 0; 
-        transform: translateY(10px); /* Reduced from 20px to minimize jump */
-    }
-    100% { 
-        opacity: 1; 
-        transform: translateY(0); 
-    }
-}
-
-/* Page load fix - ensure no scroll jump */
-body.loading {
-    overflow: hidden;
-}
-
-/* Apply initial styles to prevent layout shift */
-* {
-    box-sizing: border-box;
-}
-
-/* Ensure no initial scroll offset */
-html {
-    scroll-padding-top: 0;
-    scroll-margin-top: 0;
-}
-
-body {
-    scroll-padding-top: 0;
-    scroll-margin-top: 0;
+    0% { opacity: 0; transform: translateY(10px); }
+    100% { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes bounceBadge {
-    0%, 100% { 
-        transform: translateY(0) scale(1); 
-    }
-    25% { 
-        transform: translateY(-4px) scale(1.05); 
-    }
-    50% { 
-        transform: translateY(-2px) scale(1.1); 
-    }
-    75% { 
-        transform: translateY(-1px) scale(1.05); 
-    }
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-3px); }
 }
 
+/* headerGlow was present in previous CSS but not used in the HTML/JS. Kept for completeness. */
 @keyframes headerGlow {
-    0% { 
-        box-shadow: 0 0 8px rgba(88, 166, 255, 0.4); 
-    }
-    50% { 
-        box-shadow: 0 0 25px rgba(88, 166, 255, 0.6), 
-                    0 0 35px rgba(88, 166, 255, 0.3); 
-    }
-    100% { 
-        box-shadow: 0 0 8px rgba(88, 166, 255, 0.4); 
-    }
+    0% { box-shadow: 0 0 8px #58a6ff66; }
+    100% { box-shadow: 0 0 20px #58a6ffcc; }
 }
 
-/* --- Responsive Enhancements --- */
-@media (max-width: 768px) {
-    header {
-        flex-direction: column;
-        padding: 20px;
-        min-height: auto;
-        text-align: center;
-    }
-    
-    header nav ul {
-        margin-top: 15px;
-        flex-wrap: wrap;
-        justify-content: center;
-    }
-    
-    .search-input-group {
-        flex-direction: column;
-        gap: 10px;
-    }
-    
-    .filter-toggle,
-    .settings-button,
-    .show-more-button {
-        width: 100%;
-        justify-content: center;
-    }
-    
-    .folder,
-    .file {
-        padding: 8px 12px;
-        flex-wrap: wrap;
-    }
-    
-    .file-description,
-    .file-extension {
-        margin-left: 0;
-        margin-top: 5px;
-        order: initial;
-    }
+/* Header controls container */
+.header-controls {
+  position: sticky;
+  top: 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 10px var(--container-padding);
+  background: linear-gradient(180deg, var(--bg-gradient-start) 0%, var(--bg-gradient-end) 100%);
+  z-index: 1000;
+  border-bottom: 1px solid #30363d;
 }
 
-@media (max-width: 480px) {
-    :root {
-        --container-padding: 15px;
-        --font-size: 14px;
-    }
-    
-    body {
-        padding: var(--container-padding);
-    }
-    
-    header {
-        padding: 15px;
-        font-size: 1.2rem;
-    }
-    
-    .search-controls {
-        padding: 15px;
-    }
-    
-    #searchBar {
-        font-size: 14px;
-        padding: 10px 14px;
-    }
-    
-    .folder,
-    .file {
-        padding: 6px 10px;
-    }
-    
-    .icon {
-        width: 16px;
-        margin-right: 8px;
-    }
+/* Download button styling */
+#download-queue-btn {
+  position: static; /* Changed from fixed/absolute */
+  margin-left: auto; /* Pushes to right */
+  padding: 8px 16px;
+  font-size: 14px;
+  background-color: #444;
+  color: #eee;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
 }
 
-/* --- Dark mode enhancements --- */
-@media (prefers-color-scheme: dark) {
-    :root {
-        --text-color: #e6edf3;
-        --dim-text: #9ca3af;
-    }
-    
-    body {
-        background: 
-            radial-gradient(ellipse at 20% 50%, rgba(88, 166, 255, 0.08) 0%, transparent 50%),
-            radial-gradient(ellipse at 80% 20%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
-            linear-gradient(180deg, #000000 0%, #0a0a0a 100%);
-    }
+#download-queue-btn:hover {
+  background-color: #555;
 }
 
-/* --- Accessibility improvements --- */
-@media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
-        transition-duration: 0.01ms !important;
-    }
-    
-    body::before {
-        animation: none;
-    }
-    
-    .spinner::after {
-        animation: none;
-    }
-}
-
-/* --- Print styles --- */
-@media print {
-    body {
-        background: white !important;
-        color: black !important;
-    }
-    
-    header,
-    .notice-bar,
-    .search-controls,
-    .filter-toggle,
-    .settings-button,
-    .show-more-button,
-    #download-queue-btn {
-        display: none !important;
-    }
-    
-    .folder,
-    .file {
-        background: none !important;
-        box-shadow: none !important;
-        border: 1px solid #ccc !important;
-        margin-bottom: 2px;
-    }
-    
-    .file-description,
-    .file-extension {
-        background: #f0f0f0 !important;
-        color: #333 !important;
-        border: 1px solid #ccc !important;
-    }
-}
-
-/* --- Focus indicators for accessibility --- */
-.folder:focus-visible,
-.file:focus-visible,
-.filter-toggle:focus-visible,
-.settings-button:focus-visible,
-.show-more-button:focus-visible {
-    outline: 2px solid var(--primary-accent);
-    outline-offset: 2px;
-}
-
-/* --- High contrast mode support --- */
-@media (prefers-contrast: high) {
-    :root {
-        --primary-accent: #00d4ff;
-        --text-color: #ffffff;
-        --dim-text: #cccccc;
-    }
-    
-    .folder,
-    .file {
-        border: 2px solid rgba(88, 166, 255, 0.5);
-    }
-    
-    .folder:hover,
-    .file:hover {
-        border-color: var(--primary-accent);
-    }
+/* Adjust main content spacing */
+main {
+  padding-top: 0px; /* Make space for sticky header */
 }
