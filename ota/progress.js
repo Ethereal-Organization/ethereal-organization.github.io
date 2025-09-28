@@ -1,4 +1,4 @@
-// Collection Goal Progress Bar - Shows progress toward a target number of files
+// Updated progress.js - Uses shared data manager
 class CollectionProgressBar {
     constructor(config = {}) {
         this.targetGoal = config.targetGoal || 1000000; // Default goal: 1 million files
@@ -11,7 +11,7 @@ class CollectionProgressBar {
         this.isVisible = false;
         
         this.init();
-        this.loadCurrentCount();
+        this.initializeWithSharedData();
     }
     
     init() {
@@ -168,56 +168,24 @@ class CollectionProgressBar {
         document.head.appendChild(style);
     }
 
-    async loadCurrentCount() {
-        // Wait for the page to be fully loaded
-        if (document.readyState !== 'complete') {
-            await new Promise(resolve => {
-                if (document.readyState === 'complete') {
-                    resolve();
-                } else {
-                    window.addEventListener('load', resolve, { once: true });
-                }
+    initializeWithSharedData() {
+        if (window.sharedDataManager) {
+            // Add listener for data updates
+            window.sharedDataManager.addListener((dataManager) => {
+                const totalCount = dataManager.getTotalCount();
+                this.updateProgress(totalCount);
             });
-        }
 
-        // Wait a bit more for other scripts to initialize
-        await new Promise(resolve => setTimeout(resolve, 500));
-
-        // This integrates with your existing count.js logic
-        try {
-            const jsonFiles = [
-                'OTA-PART-1/chunk_001.json',
-                'OTA-PART-1/chunk_002.json',
-                'OTA-PART-2/chunk_001.json',
-                // Add more files when needed
-            ];
-
-            const allData = await Promise.all(
-                jsonFiles.map(file => 
-                    fetch(file)
-                        .then(response => {
-                            if (!response.ok) throw new Error(`Failed to fetch ${file}`);
-                            return response.json();
-                        })
-                        .then(data => {
-                            if (Array.isArray(data)) {
-                                return data.length;
-                            }
-                            return 0;
-                        })
-                        .catch(err => {
-                            console.error(`Error loading ${file}:`, err);
-                            return 0;
-                        })
-                )
-            );
-
-            const totalCount = allData.reduce((sum, count) => sum + count, 0);
-            this.updateProgress(totalCount);
-
-        } catch (error) {
-            console.error('Error loading file counts:', error);
-            this.updateProgress(0);
+            // Load data if not already loaded, or get current count if loaded
+            if (window.sharedDataManager.isLoaded()) {
+                const totalCount = window.sharedDataManager.getTotalCount();
+                this.updateProgress(totalCount);
+            } else {
+                window.sharedDataManager.loadData();
+            }
+        } else {
+            // Retry in 100ms if shared data manager not ready
+            setTimeout(() => this.initializeWithSharedData(), 100);
         }
     }
 
@@ -250,17 +218,17 @@ class CollectionProgressBar {
             
             // Check for milestones
             const milestones = [100000, 125000, 150000, 175000, 200000, 225000, 250000, 275000, 300000, 325000, 350000, 375000, 400000, 425000, 450000, 475000, 500000, 525000, 550000, 575000, 600000, 625000, 650000, 675000, 700000, 725000, 750000];
-	    milestones.sort((a, b) => a - b);
-	    let highestMilestoneCrossed = 0;
+            milestones.sort((a, b) => a - b);
+            let highestMilestoneCrossed = 0;
 
             for (const milestone of milestones) {
                 if (previousCount < milestone && this.currentCount >= milestone) {
-		    highestMilestoneCrossed = milestone;
+                    highestMilestoneCrossed = milestone;
                 }
             }
             if (highestMilestoneCrossed > 0) {
                 this.showMilestone(highestMilestoneCrossed);
-	    }
+            }
         }
         
         // Color coding based on progress
@@ -310,33 +278,20 @@ class CollectionProgressBar {
         if (this.isVisible) return;
         this.isVisible = true;
         
-        // Debug logging
-        console.log('Attempting to show progress bar');
-        
         // Try multiple insertion points
         const headerControls = document.getElementById('header-controls');
         const main = document.querySelector('main');
         const noticeBar = document.querySelector('.notice-bar');
         
-        console.log('headerControls:', headerControls);
-        console.log('main:', main);
-        console.log('noticeBar:', noticeBar);
-        
         if (headerControls) {
-            console.log('Inserting after header-controls');
             headerControls.insertAdjacentElement('afterend', this.progressContainer);
         } else if (noticeBar) {
-            console.log('Inserting after notice-bar');
             noticeBar.insertAdjacentElement('afterend', this.progressContainer);
         } else if (main) {
-            console.log('Inserting at beginning of main');
             main.insertAdjacentElement('afterbegin', this.progressContainer);
         } else {
-            console.log('Inserting to document body');
             document.body.appendChild(this.progressContainer);
         }
-        
-        console.log('Progress container added to DOM');
     }
 
     hide() {
@@ -350,7 +305,7 @@ class CollectionProgressBar {
 
 // Configuration options
 const COLLECTION_CONFIG = {
-    targetGoal: 500000, // 1 million samples goal - adjust as needed
+    targetGoal: 500000, // 500k samples goal - adjust as needed
 };
 
 // Initialize the collection progress bar

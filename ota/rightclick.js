@@ -1,9 +1,13 @@
-// == CONTEXT MENU SETUP ==
+// Updated rightclick.js - Supports flat paths and proper folder removal
 
+// == CONTEXT MENU SETUP ==
 window.queuedFiles = window.queuedFiles || new Set();
 window.fileDownloadURLs = window.fileDownloadURLs || {};
-window.folderQueueState = window.folderQueueState || {};  // Initialize folder state tracking
-window.fileSizes = window.fileSizes || {}; // for file sizes
+window.folderQueueState = window.folderQueueState || {};
+window.fileSizes = window.fileSizes || {};
+
+let fileDownloadURLs = {};
+let fileSizes = {};
 
 const contextMenu = document.createElement('div');
 contextMenu.id = 'custom-context-menu';
@@ -25,7 +29,6 @@ contextMenu.style.transition = 'opacity 0.15s ease';
 document.body.appendChild(contextMenu);
 
 // == MODAL SETUP ==
-
 const modalOverlay = document.createElement('div');
 modalOverlay.id = 'properties-modal-overlay';
 modalOverlay.style.position = 'absolute';
@@ -51,7 +54,7 @@ modalDialog.style.borderRadius = '6px';
 modalDialog.style.width = '400px';
 modalDialog.style.maxWidth = '90vw';
 modalDialog.style.padding = '20px';
-modalDialog.style.position = 'absolute'; // changed to absolute
+modalDialog.style.position = 'absolute';
 modalDialog.style.boxShadow = '0 6px 20px rgba(0,0,0,0.7)';
 modalDialog.style.userSelect = 'text';
 
@@ -86,9 +89,7 @@ closeButton.style.fontSize = '14px';
 closeButton.style.transition = 'background-color 0.2s ease';
 closeButton.addEventListener('mouseenter', () => closeButton.style.background = '#555');
 closeButton.addEventListener('mouseleave', () => closeButton.style.background = '#444');
-closeButton.addEventListener('click', () => {
-  modalOverlay.style.display = 'none';
-});
+closeButton.addEventListener('click', () => { modalOverlay.style.display = 'none'; });
 modalDialog.appendChild(closeButton);
 
 function createPropertyRow(label, value) {
@@ -109,14 +110,11 @@ function createPropertyRow(label, value) {
 }
 
 // == MODAL CENTERING FIX ==
-
 function centerModal() {
   const scrollY = window.scrollY || document.documentElement.scrollTop;
   const scrollX = window.scrollX || document.documentElement.scrollLeft;
-
   const viewportWidth = window.innerWidth;
   const viewportHeight = window.innerHeight;
-
   const modalWidth = modalDialog.offsetWidth;
   const modalHeight = modalDialog.offsetHeight;
 
@@ -124,107 +122,44 @@ function centerModal() {
   modalDialog.style.left = `${scrollX + (viewportWidth - modalWidth) / 2}px`;
 }
 
-function showModal() {
-  modalOverlay.style.display = 'block';
-  centerModal();
-}
-
-// Recenter on resize/scroll
+function showModal() { modalOverlay.style.display = 'block'; centerModal(); }
 window.addEventListener('resize', centerModal);
 window.addEventListener('scroll', centerModal);
 
-modalOverlay.addEventListener('click', (event) => {
-  if (event.target === modalOverlay) {
-    modalOverlay.style.display = 'none';
-  }
-});
+modalOverlay.addEventListener('click', (event) => { if(event.target === modalOverlay) modalOverlay.style.display = 'none'; });
 
 // == QUEUE SHARED STATE SETUP ==
-
-window.queuedFiles = window.queuedFiles || new Set();
-window.fileDownloadURLs = window.fileDownloadURLs || {};
 const queuedFiles = window.queuedFiles;
-const fileDownloadURLs = window.fileDownloadURLs;
 
-// == FILE URL MAPPING ==
-
-if (typeof jsonFiles === 'undefined') {
-  const jsonFiles = [
-    'chunk_001.json',
-    'chunk_002.json',
-  ];
+// == SHARED DATA MANAGER INTEGRATION ==
+function initializeDataFromSharedManager() {
+  if(window.sharedDataManager && window.sharedDataManager.isLoaded()) {
+    fileDownloadURLs = window.sharedDataManager.getFileDownloadURLs();
+    fileSizes = window.sharedDataManager.getFileSizes();
+    window.fileDownloadURLs = fileDownloadURLs;
+    window.fileSizes = fileSizes;
+  } else if(window.sharedDataManager) {
+    window.sharedDataManager.addListener(() => {
+      fileDownloadURLs = window.sharedDataManager.getFileDownloadURLs();
+      fileSizes = window.sharedDataManager.getFileSizes();
+      window.fileDownloadURLs = fileDownloadURLs;
+      window.fileSizes = fileSizes;
+    });
+  } else {
+    setTimeout(initializeDataFromSharedManager, 100);
+  }
 }
-async function loadAllFileData(){
-  try {
-    for (const url of jsonFiles) {
-      const res = await fetch(url);
-      if (!res.ok) continue;
-      const data = await res.json();
-      if (!Array.isArray(data)) continue;
-      data.forEach(fileEntry => {
-        if (fileEntry.name && fileEntry.download_url) {
-          fileDownloadURLs[fileEntry.name] = fileEntry.download_url;
-          if (fileEntry.size != null) {
-            window.fileSizes[fileEntry.name] = fileEntry.size;
-          }
-        }
-      });
-    }
-  } catch {}
-}
-
-loadAllFileData();
 
 // == CONTEXT MENU LOGIC ==
-
 function getFileNameFromElement(target) {
   const filenameEl = target.querySelector('.filename');
-  if (!filenameEl) return 'Unknown';
-
-  if (target.classList.contains('file')) {
-    for (const node of filenameEl.childNodes) {
-      if (node.nodeType === Node.TEXT_NODE && node.textContent.trim() !== '') {
-        return node.textContent.trim();
-      }
+  if(!filenameEl) return 'Unknown';
+  if(target.classList.contains('file')) {
+    for(const node of filenameEl.childNodes) {
+      if(node.nodeType === Node.TEXT_NODE && node.textContent.trim() !== '') return node.textContent.trim();
     }
     return 'Unknown';
-  } else {
-    return filenameEl.textContent.trim();
-  }
-}
-
-function isFolderInQueue(folderName) {
-  const folderNameLower = folderName.toLowerCase();
-  const hasFilesInQueue = Array.from(window.queuedFiles).some(filePath => {
-    const filePathLower = filePath.toLowerCase();
-    return filePathLower === folderNameLower || filePathLower.startsWith(folderNameLower + '.');
-  });
-  return window.folderQueueState[folderName] || hasFilesInQueue;
-}
-
-function removeFolderAndContents(folderName) {
-  const folderNameLower = folderName.toLowerCase();
-  Array.from(window.queuedFiles).forEach(filePath => {
-    const filePathLower = filePath.toLowerCase();
-    if (filePathLower === folderNameLower || filePathLower.startsWith(folderNameLower + '.')) {
-      window.queuedFiles.delete(filePath);
-    }
-  });
-  window.folderQueueState[folderName] = false;
-}
-
-function handleAddToQueue(folderName, recursive = false, dryRun = false) {
-  const filesToAdd = getAllFilesInFolder(folderName);
-
-  if (dryRun) {
-    return filesToAdd.length;
-  }
-
-  for (const file of filesToAdd) {
-    window.queuedFiles.add(file);
-  }
-
-  return filesToAdd.length;
+  } else return filenameEl.textContent.trim();
 }
 
 function buildContextMenu(target) {
@@ -235,95 +170,53 @@ function buildContextMenu(target) {
   const fileNameLower = fileName.toLowerCase();
 
   const fileCount = isFolder 
-    ? Array.from(window.queuedFiles).filter(filePath => {
-        const filePathLower = filePath.toLowerCase();
-        return filePathLower === fileNameLower || filePathLower.startsWith(fileNameLower + '.');
-      }).length
+    ? Array.from(queuedFiles).filter(fp => fp.toLowerCase() === fileNameLower || fp.toLowerCase().startsWith(fileNameLower + '/')).length
     : 0;
 
-  const inQueue = isFolder ? (window.folderQueueState[fileName] || fileCount > 0) : window.queuedFiles.has(fileName);
+  const inQueue = isFolder ? (window.folderQueueState[fileName] || fileCount > 0) : queuedFiles.has(fileName);
 
   const menuOptions = [
-    { 
-      label: 'Open', 
-      action: (target) => target.click() 
-    },
-    { 
-      label: 'Properties', 
-      action: (target) => {
-        const name = getFileNameFromElement(target);
-        const type = isFolder ? 'Folder' : 'File';
-        const size = isFolder ? "-" : (window.fileSizes[fileName] ? formatSize(window.fileSizes[fileName]) : "Unknown");
-        const dateModified = 'WIP';
-
-        modalContent.innerHTML = '';
-
-        if (!isFolder) {
-          modalContent.appendChild(createPropertyRow('Name:', name));
-          modalContent.appendChild(createPropertyRow('Type:', type));
-
-          const descriptionEl = target.querySelector('.file-description');
-          const extensionEl = target.querySelector('.file-extension');
-
-          const description = descriptionEl ? descriptionEl.textContent.trim() : '-';
-          const extension = extensionEl ? extensionEl.textContent.trim() : '-';
-
-          modalContent.appendChild(createPropertyRow('Description:', description));
-          modalContent.appendChild(createPropertyRow('Extensions:', extension));
-          modalContent.appendChild(createPropertyRow('Size:', size));
-          modalContent.appendChild(createPropertyRow('Date modified:', dateModified));
-        } else {
-          modalContent.appendChild(createPropertyRow('Name:', name));
-          modalContent.appendChild(createPropertyRow('Type:', type));
-          modalContent.appendChild(createPropertyRow('Size:', size));
-          modalContent.appendChild(createPropertyRow('Date modified:', dateModified));
-        }
-
-        showModal();
+    { label:'Open', action: t => t.click() },
+    { label:'Properties', action: t => {
+      const name = getFileNameFromElement(t);
+      const type = isFolder ? 'Folder' : 'File';
+      const size = isFolder ? '-' : (fileSizes[fileName] ? formatSize(fileSizes[fileName]) : 'Unknown');
+      const dateModified = 'WIP';
+      modalContent.innerHTML = '';
+      modalContent.appendChild(createPropertyRow('Name:', name));
+      modalContent.appendChild(createPropertyRow('Type:', type));
+      if(!isFolder) {
+        const descEl = t.querySelector('.file-description');
+        const extEl = t.querySelector('.file-extension');
+        modalContent.appendChild(createPropertyRow('Description:', descEl ? descEl.textContent.trim() : '-'));
+        modalContent.appendChild(createPropertyRow('Extensions:', extEl ? extEl.textContent.trim() : '-'));
+        modalContent.appendChild(createPropertyRow('Size:', size));
+      } else {
+        modalContent.appendChild(createPropertyRow('Size:', size));
       }
-    },
-    {
-      label: inQueue ?
-        (isFolder ? `Remove from queue (${fileCount} files)` : 'Remove from queue') :
-        'Add to queue',
+      modalContent.appendChild(createPropertyRow('Date modified:', dateModified));
+      showModal();
+    }},
+    { label: inQueue ? (isFolder ? `Remove from queue (${fileCount} files)` : 'Remove from queue') : 'Add to queue',
       action: () => {
-        if (isFolder) {
-          if (inQueue) {
-            const folderNameLower = fileName.toLowerCase();
-            const filesToRemove = Array.from(window.queuedFiles).filter(filePath =>
-              filePath.toLowerCase() === folderNameLower ||
-              filePath.toLowerCase().startsWith(folderNameLower + '.')
-            );
-
-            filesToRemove.forEach(filePath => window.queuedFiles.delete(filePath));
-            window.folderQueueState[fileName] = false;
+        if(isFolder) {
+          if(inQueue) {
+	    const removedCount = handleRemoveFromQueue(fileName, true);
+	    if (removedCount > 0) window.folderQueueState[fileName] = false;
           } else {
-            if (window.handleAddToQueue) {
-              const estimatedCount = window.handleAddToQueue(fileName, true, true);
-              if (estimatedCount >= 100) {
-                const confirmAdd = confirm(`This folder contains ${estimatedCount} files. Are you sure you want to add them all to the queue?`);
-                if (!confirmAdd) return;
-              }
-              const actualCount = window.handleAddToQueue(fileName, true, false);
-              window.folderQueueState[fileName] = true;
-            } else {
-              alert('Folder queuing requires handleAddToQueue');
-            }
+            handleAddToQueue(fileName, true);
+            window.folderQueueState[fileName] = true;
           }
         } else {
-          if (inQueue) {
-            window.queuedFiles.delete(fileName);
-          } else {
-            window.queuedFiles.add(fileName);
-          }
+          if(inQueue) queuedFiles.delete(fileName);
+          else queuedFiles.add(fileName);
         }
-
-        buildContextMenu(target); // Refresh menu
+        buildContextMenu(target);
       }
     }
   ];
 
-  menuOptions.forEach(({ label, action }) => {
+  menuOptions.forEach(({label, action}) => {
     const item = document.createElement('div');
     item.textContent = label;
     item.style.padding = '8px 16px';
@@ -332,105 +225,63 @@ function buildContextMenu(target) {
     item.style.transition = 'background-color 0.2s ease, color 0.2s ease';
     item.style.borderRadius = '2px';
     item.style.color = '#eee';
-    item.addEventListener('mouseenter', () => {
-      item.style.backgroundColor = '#555';
-      item.style.color = '#fff';
-    });
-    item.addEventListener('mouseleave', () => {
-      item.style.backgroundColor = 'transparent';
-      item.style.color = '#eee';
-    });
-    item.addEventListener('click', () => {
-      action(target);
-      hideContextMenu();
-    });
+    item.addEventListener('mouseenter', () => { item.style.backgroundColor='#555'; item.style.color='#fff'; });
+    item.addEventListener('mouseleave', () => { item.style.backgroundColor='transparent'; item.style.color='#eee'; });
+    item.addEventListener('click', () => { action(target); hideContextMenu(); });
     contextMenu.appendChild(item);
   });
 }
 
-function showContextMenu(x, y) {
+function showContextMenu(x,y){
   const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
   const scrollLeft = window.pageXOffset || document.documentElement.scrollLeft;
-  
   contextMenu.style.top = `${y}px`;
   contextMenu.style.left = `${x}px`;
-  contextMenu.style.display = 'block';
-  contextMenu.style.opacity = '1';
-
-  const rect = contextMenu.getBoundingClientRect();
-  const viewportWidth = window.innerWidth;
-  const viewportHeight = window.innerHeight;
-  
-  if (rect.right > viewportWidth) {
-    const newLeft = x - rect.width;
-    contextMenu.style.left = `${Math.max(scrollLeft + 10, newLeft)}px`;
-  }
-  
-  if (rect.bottom > viewportHeight) {
-    const newTop = y - rect.height;
-    contextMenu.style.top = `${Math.max(scrollTop + 10, newTop)}px`;
-  }
-  
-  if (rect.left < 0) {
-    contextMenu.style.left = `${scrollLeft + 10}px`;
-  }
-  
-  if (rect.top < 0) {
-    contextMenu.style.top = `${scrollTop + 10}px`;
-  }
+  contextMenu.style.display='block';
+  contextMenu.style.opacity='1';
+  const rect=contextMenu.getBoundingClientRect();
+  const vw=window.innerWidth, vh=window.innerHeight;
+  if(rect.right>vw) contextMenu.style.left=`${Math.max(scrollLeft+10, x-rect.width)}px`;
+  if(rect.bottom>vh) contextMenu.style.top=`${Math.max(scrollTop+10, y-rect.height)}px`;
+  if(rect.left<0) contextMenu.style.left=`${scrollLeft+10}px`;
+  if(rect.top<0) contextMenu.style.top=`${scrollTop+10}px`;
 }
 
-function hideContextMenu() {
-  contextMenu.style.display = 'none';
-  contextMenu.style.opacity = '0';
-}
+function hideContextMenu(){ contextMenu.style.display='none'; contextMenu.style.opacity='0'; }
 
-document.addEventListener('contextmenu', event => {
-  const target = event.target.closest('.folder, .file');
-  if (!target) {
-    hideContextMenu();
-    return;
-  }
-  event.preventDefault();
+document.addEventListener('contextmenu', e=>{
+  const target=e.target.closest('.folder, .file');
+  if(!target){ hideContextMenu(); return; }
+  e.preventDefault();
   buildContextMenu(target);
-  showContextMenu(event.pageX, event.pageY);
+  showContextMenu(e.pageX, e.pageY);
 });
 
-document.addEventListener('click', event => {
-  if (!contextMenu.contains(event.target)) {
-    hideContextMenu();
-  }
-});
+document.addEventListener('click', e=>{ if(!contextMenu.contains(e.target)) hideContextMenu(); });
 
-function formatSize(bytes) {
-  if (typeof bytes !== "number" || isNaN(bytes)) return "Unknown";
-  const units = ["B", "KB", "MB", "GB", "TB"];
-  let i = 0;
-  while (bytes >= 1024 && i < units.length - 1) {
-    bytes /= 1024;
-    i++;
-  }
-  return `${bytes.toFixed(1)} ${units[i]}`;
-}
+function formatSize(bytes){ if(typeof bytes!=="number"||isNaN(bytes)) return "Unknown"; const units=["B","KB","MB","GB","TB"]; let i=0; while(bytes>=1024&&i<units.length-1){ bytes/=1024;i++;} return `${bytes.toFixed(1)} ${units[i]}`; }
 
-// ==============
-// == Helper example ==
-// ==============
-
-window.getAllFilesInFolder = function(folderName) {
-  return [
-    folderName + '.file1.txt',
-    folderName + '.file2.txt',
-    folderName + '.file3.txt'
-  ];
+// == Folder operations with flat paths ==
+window.getAllFilesInFolder = function(folderName){
+  return window.sharedDataManager ? window.sharedDataManager.getData()
+    .filter(f=>f.path.toLowerCase()===folderName.toLowerCase()||f.path.toLowerCase().startsWith(folderName.toLowerCase()+'/'))
+    .map(f=>f.path) : [];
 };
 
-window.handleAddToQueue = function(folderName, recursive = true, dryRun = false) {
+window.handleAddToQueue = function(folderName, recursive=true){
   const files = window.getAllFilesInFolder(folderName);
-  if (dryRun) {
-    return files.length;
-  }
-  files.forEach(f => window.queuedFiles.add(f));
+  files.forEach(f=>queuedFiles.add(f));
   window.folderQueueState[folderName] = true;
   return files.length;
 };
+
+window.handleRemoveFromQueue = function(folderName, recursive=true){
+  const files = window.getAllFilesInFolder(folderName);
+  files.forEach(f=>queuedFiles.delete(f));
+  window.folderQueueState[folderName] = false;
+  return files.length;
+};
+
+// Initialize shared data
+if(document.readyState==='loading') document.addEventListener('DOMContentLoaded', initializeDataFromSharedManager);
+else initializeDataFromSharedManager();

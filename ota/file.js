@@ -1,3 +1,5 @@
+// Updated file.js - Uses shared data manager
+
 // Constants defined before the main object
 const androidMistake = { description: "Android executable file", extensions: ["apk", "xapk", "apks"] };
 const powershell = { description: "PowerShell script", extensions: ["ps1", "psm1", "psd1", "ps1xml"] };
@@ -95,16 +97,15 @@ const explorer = document.getElementById("fileExplorer");
 const searchInput = document.getElementById("searchBar");
 const spinner = document.getElementById("spinner");
 const itemsPerPageSelect = document.getElementById("itemsPerPage");
-const filterField = document.getElementById("filterField"); // Added: Get the filter dropdown
+const filterField = document.getElementById("filterField");
 
 const aliases = {
-        ".adnroidos.": ".androidos.",
-	".boot-dos.": ".dos.",
-        ".powershell.": ".msh."
+    ".adnroidos.": ".androidos.",
+    ".boot-dos.": ".dos.",
+    ".powershell.": ".msh."
 };
 
 let fullTree = [];
-
 const DEFAULT_DISPLAY_LIMIT = 10;
 
 /**
@@ -131,9 +132,6 @@ function normalizeFileTypeKey(key) {
 
     // Normalize underscores to dashes
     key = key.replace(/_/g, "-");
-
-    // Option 1: Remove all dashes for matching purposes
-    // const cleanedKey = key.replace(/-/g, "");
 
     // Option 2 (recommended): Keep dashes but ensure filter keys have dashes too
     const cleanedKey = key;
@@ -236,28 +234,19 @@ function createNode(name, node, depth = 0, search = "") {
 
     if (!isFolder && node.__data) {
         const rawFileTypeKey = extractTypeFromVirusName(name); 
-        const fileTypeKey = normalizeFileTypeKey(rawFileTypeKey); // Use the new normalization function
-	//console.log("[createNode] rawFileTypeKey:", rawFileTypeKey);
-        //console.log("[createNode] normalized fileTypeKey:", fileTypeKey);
+        const fileTypeKey = normalizeFileTypeKey(rawFileTypeKey);
 
         let fileInfo = fileTypeDescriptions[fileTypeKey];
-	if (!fileInfo) {
-            //console.warn(`[createNode] No fileInfo found for normalized key "${fileTypeKey}"`);
-        }
 
-	// Fallback for .boot-dos.
+        // Fallback for .boot-dos.
         if ((!fileInfo || !fileInfo.description) && fileTypeKey === ".boot-dos.") {
-           // console.log("[createNode] Falling back from .boot-dos. to .dos.");
             fileInfo = fileTypeDescriptions[".dos."];
-            if (!fileInfo) {
-               // console.warn("[createNode] Also no .dos. info found!");
-            }
         }
 
         if (fileInfo && fileInfo.description) {
             const descSpan = document.createElement("span");
             descSpan.className = "file-description";
-            descSpan.textContent = ` ${fileInfo.description}`; // Added parentheses for better formatting
+            descSpan.textContent = ` ${fileInfo.description}`;
             label.appendChild(descSpan);
         }
 
@@ -286,21 +275,18 @@ function createNode(name, node, depth = 0, search = "") {
             // Only append children if they haven't been appended yet for this folder instance
             if (container.dataset.childrenAppended === "false") {
                 // Clear any old child nodes first, before re-appending during a refresh from search/filter
-                // This prevents duplicates if the folder was already expanded in a previous state
-                // However, be careful not to remove the folder's own header (item div)
                 while (container.children.length > 1) { // Keep the first child (the folder header)
                     container.removeChild(container.lastChild);
                 }
 
                 // Pass true for isLazy when expanding a folder to ensure its files are lazy loaded.
-                // The children are built directly into this container.
                 buildExplorerUI(node.__children, container, depth + 1, searchInput.value.trim().toLowerCase(), true, filterField.value);
                 container.dataset.childrenAppended = "true"; // Mark children as appended
             }
 
-            // Toggle expansion state and visibility of children (elements after the first one)
+            // Toggle expansion state and visibility of children
             container.expanded = !container.expanded;
-            const children = Array.from(container.children).slice(1); // Get all children except the folder's own header
+            const children = Array.from(container.children).slice(1);
             children.forEach(c => {
                 c.style.display = container.expanded ? "block" : "none";
             });
@@ -318,7 +304,7 @@ function createNode(name, node, depth = 0, search = "") {
 
     return container;
 }
-// Boot-DOS can go fuck itself
+
 function extractTypeFromVirusName(virusName) {
     // virusName example: "Virus.Boot-DOS.Shrapnel.6067"
     const parts = virusName.split(".");
@@ -334,12 +320,12 @@ function extractTypeFromVirusName(virusName) {
     // Extract parts between 1 and length-2 inclusive
     const typeParts = parts.slice(1, parts.length - 1);
 
-    // Join type parts back with '.' or maybe '-'
-    // Usually type parts are hyphenated, so just join with '.'
+    // Join type parts back with '.'
     const type = typeParts.join(".");
 
     return type.toLowerCase();
 }
+
 /**
  * Recursively build file explorer UI with optional lazy loading for files only
  * @param {object} treeNode - The current node in the nested tree.
@@ -357,12 +343,9 @@ function buildExplorerUI(treeNode, container, depth = 0, search = "", isLazy = t
 
     // First render all folders
     for (const [key, value] of folders) {
-        // A folder should only be shown if it contains a file that matches both search and filter criteria.
         if ((!search && !selectedFilterKey) || hasMatchingFileDescendant(value.__children, search.toLowerCase(), selectedFilterKey.toLowerCase())) {
             const nodeElement = createNode(key, value, depth, search);
             container.appendChild(nodeElement);
-
-            // Folders are always initially collapsed by default. User must click to expand them.
             nodeElement.expanded = false;
         }
     }
@@ -437,12 +420,9 @@ function buildExplorerUI(treeNode, container, depth = 0, search = "", isLazy = t
         if (existingBtn) existingBtn.remove();
     }
 }
+
 /**
- * Recursively check if a node or any of its descendants are files matching search AND filter (by normalized file type)
- * @param {object} node - The current node in the nested tree.
- * @param {string} searchLower - Current search query (lowercase).
- * @param {string} selectedFilterKeyLower - The lowercase internal key string (e.g., ".win32.").
- * @returns {boolean} - True if a relevant descendant file is found, false otherwise.
+ * Recursively check if a node or any of its descendants are files matching search AND filter
  */
 function hasMatchingFileDescendant(node, searchLower, selectedFilterKeyLower) {
     for (const [key, value] of Object.entries(node)) {
@@ -486,40 +466,21 @@ function hasMatchingFileDescendant(node, searchLower, selectedFilterKeyLower) {
 }
 
 /**
- * Load your JSON file, build tree, render explorer
+ * Load explorer using shared data manager
  */
 async function loadExplorer() {
-    const jsonFiles = [
-        "OTA-PART-1/chunk_001.json",
-        "OTA-PART-1/chunk_002.json",
-	"OTA-PART-2/chunk_001.json",
-        // Add more files when needed
-    ];
+    if (!window.sharedDataManager) {
+        console.error('Shared data manager not available');
+        explorer.textContent = "Data manager not available.";
+        return;
+    }
 
     try {
         spinner.style.display = "block";
-
-        const allData = await Promise.all(
-            jsonFiles.map(file =>
-                fetch(file)
-                    .then(res => {
-                        if (!res.ok) throw new Error(`Failed to fetch ${file}`);
-                        return res.json();
-                    })
-                    .then(data => {
-                        if (Array.isArray(data)) return data;
-                        console.warn(`${file} is not an array.`);
-                        return [];
-                    })
-                    .catch(err => {
-                        console.error(`Error loading ${file}:`, err);
-                        return [];
-                    })
-            )
-        );
-
-        // Flatten the nested arrays into one array of all entries
-        fullTree = allData.flat();
+        
+        // Load data through shared manager
+        await window.sharedDataManager.loadData();
+        fullTree = window.sharedDataManager.getData();
 
         const nestedTree = buildNestedTreeFromFlatArray(fullTree);
         explorer.innerHTML = "";
@@ -542,63 +503,64 @@ async function loadExplorer() {
 // Event listener for the search input
 searchInput.addEventListener("input", () => {
     const query = searchInput.value.trim().toLowerCase();
-    const selectedFilterKey = filterField.value; // This is now the internal key (e.g., ".win32.")
+    const selectedFilterKey = filterField.value;
     explorer.innerHTML = "";
-    // Reset dataset properties on the main explorer when search changes
     explorer.dataset.filteredFileCount = 0;
     explorer.dataset.lastSearch = query;
-    explorer.dataset.lastFilter = selectedFilterKey; // Store the key here
+    explorer.dataset.lastFilter = selectedFilterKey;
 
-    const nestedTree = buildNestedTreeFromFlatArray(fullTree); 
-    buildExplorerUI(nestedTree, explorer, 0, query, true, selectedFilterKey);
+    if (fullTree.length > 0) {
+        const nestedTree = buildNestedTreeFromFlatArray(fullTree); 
+        buildExplorerUI(nestedTree, explorer, 0, query, true, selectedFilterKey);
+    }
 });
 
 // Event listener for the items per page dropdown
 itemsPerPageSelect.addEventListener("change", () => {
     const query = searchInput.value.trim().toLowerCase();
-    const selectedFilterKey = filterField.value; // This is now the internal key
+    const selectedFilterKey = filterField.value;
     explorer.innerHTML = "";
-    // Reset dataset properties on the main explorer when items per page changes
     explorer.dataset.filteredFileCount = 0;
     explorer.dataset.lastSearch = query;
-    explorer.dataset.lastFilter = selectedFilterKey; // Store the key here
+    explorer.dataset.lastFilter = selectedFilterKey;
 
-    const nestedTree = buildNestedTreeFromFlatArray(fullTree);
-    buildExplorerUI(nestedTree, explorer, 0, query, true, selectedFilterKey);
+    if (fullTree.length > 0) {
+        const nestedTree = buildNestedTreeFromFlatArray(fullTree);
+        buildExplorerUI(nestedTree, explorer, 0, query, true, selectedFilterKey);
+    }
 });
 
-// New event listener for the filter by type dropdown
+// Event listener for the filter by type dropdown
 filterField.addEventListener("change", () => {
     const query = searchInput.value.trim().toLowerCase();
-    const selectedFilterKey = filterField.value; // This is now the internal key
+    const selectedFilterKey = filterField.value;
     explorer.innerHTML = "";
-    // Reset dataset properties on the main explorer when filter changes
     explorer.dataset.filteredFileCount = 0;
     explorer.dataset.lastSearch = query;
-    explorer.dataset.lastFilter = selectedFilterKey; // Store the key here
+    explorer.dataset.lastFilter = selectedFilterKey;
 
-    const nestedTree = buildNestedTreeFromFlatArray(fullTree);
-    buildExplorerUI(nestedTree, explorer, 0, query, true, selectedFilterKey);
+    if (fullTree.length > 0) {
+        const nestedTree = buildNestedTreeFromFlatArray(fullTree);
+        buildExplorerUI(nestedTree, explorer, 0, query, true, selectedFilterKey);
+    }
 });
 
 // Helper function to populate the filter dropdown options
 function populateFilterOptions() {
     const sortedEntries = Object.entries(fileTypeDescriptions)
-        // Filter out any keys containing "boot-dos" (case-insensitive)
         .filter(([key, _]) => !key.toLowerCase().includes("boot-dos"))
         .sort(([, a], [, b]) => a.description.localeCompare(b.description));
 
     // Add a default "All Types" option at the beginning
     const defaultOption = document.createElement('option');
-    defaultOption.value = ""; // Empty value means no filter
+    defaultOption.value = "";
     defaultOption.textContent = "All File Types";
     filterField.appendChild(defaultOption);
 
     sortedEntries.forEach(([key, value]) => {
         const option = document.createElement('option');
-        option.value = key; // Set value to the actual internal key (e.g., ".win32.")
+        option.value = key;
         
-        // Updated to handle both extensions array and legacy extension
         const extensions = value.extensions || (value.extension ? [value.extension] : []);
         const formattedExtensions = formatExtensions(extensions);
         
@@ -609,8 +571,32 @@ function populateFilterOptions() {
     });
 }
 
-// Ensure filter options are populated and explorer is loaded when the DOM is ready
-window.addEventListener("DOMContentLoaded", () => {
+// Initialize when shared data manager is ready
+function initialize() {
     populateFilterOptions();
-    loadExplorer();
-});
+    
+    if (window.sharedDataManager) {
+        // Add listener for data updates
+        window.sharedDataManager.addListener((dataManager) => {
+            fullTree = dataManager.getData();
+            if (fullTree.length > 0) {
+                const nestedTree = buildNestedTreeFromFlatArray(fullTree);
+                explorer.innerHTML = "";
+                buildExplorerUI(nestedTree, explorer, 0, searchInput.value.trim().toLowerCase(), true, filterField.value);
+            }
+        });
+        
+        // Load initial data
+        loadExplorer();
+    } else {
+        // Retry in 100ms if shared data manager not ready
+        setTimeout(initialize, 100);
+    }
+}
+
+// Start initialization
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initialize);
+} else {
+    initialize();
+}
