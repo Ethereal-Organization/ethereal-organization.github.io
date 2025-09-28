@@ -259,9 +259,133 @@ window.onload = function () {
         
         return urls;
       } catch (err) {
-        console.warn('Error generating alternative URLs:', err);
+        // console.warn('Error generating alternative URLs:', err);
         return [];
       }
+    }
+
+    // Function to display failed files modal
+    function showFailedFilesModal(failedFiles) {
+      // Create modal overlay
+      const overlay = document.createElement('div');
+      overlay.style.position = 'fixed';
+      overlay.style.top = '0';
+      overlay.style.left = '0';
+      overlay.style.width = '100%';
+      overlay.style.height = '100%';
+      overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+      overlay.style.zIndex = '10000';
+      overlay.style.display = 'flex';
+      overlay.style.justifyContent = 'center';
+      overlay.style.alignItems = 'center';
+
+      // Create modal content
+      const modal = document.createElement('div');
+      modal.style.backgroundColor = '#2d2d2d';
+      modal.style.color = '#eee';
+      modal.style.padding = '20px';
+      modal.style.borderRadius = '10px';
+      modal.style.maxWidth = '80%';
+      modal.style.maxHeight = '80%';
+      modal.style.overflow = 'auto';
+      modal.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.3)';
+
+      // Create title
+      const title = document.createElement('h3');
+      title.textContent = `Failed Downloads (${failedFiles.length} files)`;
+      title.style.marginTop = '0';
+      title.style.marginBottom = '15px';
+      title.style.color = '#ff6b6b';
+
+      // Create file list
+      const fileList = document.createElement('div');
+      fileList.style.marginBottom = '20px';
+      fileList.style.maxHeight = '300px';
+      fileList.style.overflow = 'auto';
+      fileList.style.border = '1px solid #444';
+      fileList.style.borderRadius = '5px';
+      fileList.style.padding = '10px';
+
+      failedFiles.forEach(filePath => {
+        const fileItem = document.createElement('div');
+        fileItem.style.marginBottom = '8px';
+        fileItem.style.fontSize = '14px';
+        fileItem.style.fontFamily = 'monospace';
+        
+        const fileName = document.createElement('span');
+        fileName.textContent = filePath;
+        fileName.style.marginRight = '10px';
+        
+        const downloadLink = document.createElement('a');
+        downloadLink.textContent = '[Download]';
+        downloadLink.style.color = '#4dabf7';
+        downloadLink.style.textDecoration = 'none';
+        downloadLink.style.fontSize = '12px';
+        downloadLink.href = fileDownloadURLsByPath[filePath] || '#';
+        downloadLink.target = '_blank';
+        downloadLink.style.cursor = 'pointer';
+        
+        fileItem.appendChild(fileName);
+        fileItem.appendChild(downloadLink);
+        fileList.appendChild(fileItem);
+      });
+
+      // Create buttons container
+      const buttonContainer = document.createElement('div');
+      buttonContainer.style.display = 'flex';
+      buttonContainer.style.justifyContent = 'space-between';
+      buttonContainer.style.gap = '10px';
+
+      // Create copy list button
+      const copyButton = document.createElement('button');
+      copyButton.textContent = 'Copy File List';
+      copyButton.style.padding = '8px 16px';
+      copyButton.style.backgroundColor = '#4dabf7';
+      copyButton.style.color = 'white';
+      copyButton.style.border = 'none';
+      copyButton.style.borderRadius = '5px';
+      copyButton.style.cursor = 'pointer';
+
+      copyButton.addEventListener('click', () => {
+        const fileNames = failedFiles.join('\n');
+        navigator.clipboard.writeText(fileNames).then(() => {
+          copyButton.textContent = 'Copied!';
+          setTimeout(() => {
+            copyButton.textContent = 'Copy File List';
+          }, 2000);
+        });
+      });
+
+      // Create close button
+      const closeButton = document.createElement('button');
+      closeButton.textContent = 'Close';
+      closeButton.style.padding = '8px 16px';
+      closeButton.style.backgroundColor = '#6c757d';
+      closeButton.style.color = 'white';
+      closeButton.style.border = 'none';
+      closeButton.style.borderRadius = '5px';
+      closeButton.style.cursor = 'pointer';
+
+      closeButton.addEventListener('click', () => {
+        document.body.removeChild(overlay);
+      });
+
+      buttonContainer.appendChild(copyButton);
+      buttonContainer.appendChild(closeButton);
+
+      modal.appendChild(title);
+      modal.appendChild(fileList);
+      modal.appendChild(buttonContainer);
+      overlay.appendChild(modal);
+
+      // Close on overlay click
+      overlay.addEventListener('click', (e) => {
+        if (e.target === overlay) {
+          document.body.removeChild(overlay);
+        }
+      });
+
+      document.body.appendChild(overlay);
     }
 
     // Enhanced download function with wave-based fallbacks
@@ -276,7 +400,7 @@ window.onload = function () {
 
       // Helper function to try downloading a batch of files with specific URLs
       async function tryDownloadWave(files, urlGenerator, waveName) {
-        console.log(`\n--- ${waveName} (${files.length} files) ---`);
+        // console.log(`\n--- ${waveName} (${files.length} files) ---`);
         const results = await Promise.all(files.map(async (item) => {
           const url = urlGenerator(item);
           if (!url) return { success: false, item };
@@ -286,11 +410,8 @@ window.onload = function () {
             const timeoutId = setTimeout(() => controller.abort(), 15000); // 15 second timeout per file
             
             const resp = await fetch(url, {
-              signal: controller.signal,
-              headers: {
-                'Accept': '*/*',
-                'Cache-Control': 'no-cache'
-              }
+              signal: controller.signal
+              // Removed headers to avoid CORS preflight issues
             });
             
             clearTimeout(timeoutId);
@@ -312,11 +433,11 @@ window.onload = function () {
             }
             
             zip.file(item.path, blob);
-            console.log(`✓ ${item.path} (${blob.size} bytes)`);
+            // console.log(`✓ ${item.path} (${blob.size} bytes)`);
             return { success: true, item };
             
           } catch (err) {
-            console.log(`✗ ${item.path}: ${err.message}`);
+            // console.log(`✗ ${item.path}: ${err.message}`);
             return { success: false, item };
           }
         }));
@@ -324,7 +445,7 @@ window.onload = function () {
         const successful = results.filter(r => r.success).length;
         const failed = results.filter(r => !r.success);
         
-        console.log(`${waveName} results: ${successful}/${files.length} successful`);
+        // console.log(`${waveName} results: ${successful}/${files.length} successful`);
         
         return {
           successful,
@@ -332,24 +453,25 @@ window.onload = function () {
         };
       }
 
-      // Wave 1: Primary URLs (raw.githubusercontent.com)
+      // Wave 1: Primary sources
       if (remainingFiles.length > 0) {
         waveCount++;
-        queueStatus.textContent = `Wave ${waveCount}: Trying primary URLs...`;
+        queueStatus.textContent = `Downloading from primary sources...`;
         
         const wave1 = await tryDownloadWave(remainingFiles, 
           (item) => item.primaryUrl, 
-          "Wave 1: Primary URLs"
+          "Wave 1: Primary sources"
         );
         
         totalSuccess += wave1.successful;
         remainingFiles = wave1.failedItems;
+        queueStatus.textContent = `Downloaded ${totalSuccess}/${paths.length} files`;
       }
 
-      // Wave 2: jsdelivr CDN
+      // Wave 2: Alternative CDN
       if (remainingFiles.length > 0) {
         waveCount++;
-        queueStatus.textContent = `Wave ${waveCount}: Trying jsdelivr CDN...`;
+        queueStatus.textContent = `Trying alternative sources...`;
         
         const wave2 = await tryDownloadWave(remainingFiles,
           (item) => {
@@ -362,17 +484,18 @@ window.onload = function () {
             const filePath = pathParts.slice(1).join('/');
             return `https://cdn.jsdelivr.net/gh/${user}/${repo}@${branch}/${filePath}`;
           },
-          "Wave 2: jsdelivr CDN"
+          "Wave 2: Alternative CDN"
         );
         
         totalSuccess += wave2.successful;
         remainingFiles = wave2.failedItems;
+        queueStatus.textContent = `Downloaded ${totalSuccess}/${paths.length} files`;
       }
 
-      // Wave 3: Fixed raw URLs (remove refs/heads/)
+      // Wave 3: Backup sources
       if (remainingFiles.length > 0) {
         waveCount++;
-        queueStatus.textContent = `Wave ${waveCount}: Trying fixed URLs...`;
+        queueStatus.textContent = `Trying backup sources...`;
         
         const wave3 = await tryDownloadWave(remainingFiles,
           (item) => {
@@ -382,17 +505,18 @@ window.onload = function () {
             const cleanPath = branchAndPath.replace(/^refs\/heads\//, '');
             return `https://raw.githubusercontent.com/${user}/${repo}/${cleanPath}`;
           },
-          "Wave 3: Fixed raw URLs"
+          "Wave 3: Backup sources"
         );
         
         totalSuccess += wave3.successful;
         remainingFiles = wave3.failedItems;
+        queueStatus.textContent = `Downloaded ${totalSuccess}/${paths.length} files`;
       }
 
-      // Wave 4: statically.io CDN
+      // Wave 4: Additional mirror
       if (remainingFiles.length > 0) {
         waveCount++;
-        queueStatus.textContent = `Wave ${waveCount}: Trying statically.io CDN...`;
+        queueStatus.textContent = `Trying additional mirrors...`;
         
         const wave4 = await tryDownloadWave(remainingFiles,
           (item) => {
@@ -405,21 +529,22 @@ window.onload = function () {
             const filePath = pathParts.slice(1).join('/');
             return `https://cdn.statically.io/gh/${user}/${repo}/${branch}/${filePath}`;
           },
-          "Wave 4: statically.io CDN"
+          "Wave 4: Additional mirror"
         );
         
         totalSuccess += wave4.successful;
         remainingFiles = wave4.failedItems;
+        queueStatus.textContent = `Downloaded ${totalSuccess}/${paths.length} files`;
       }
 
-      // Wave 5: Cache-busted raw URLs
+      // Wave 5: Final retry
       if (remainingFiles.length > 0) {
         waveCount++;
-        queueStatus.textContent = `Wave ${waveCount}: Trying cache-busted URLs...`;
+        queueStatus.textContent = `Final retry attempt...`;
         
         const wave5 = await tryDownloadWave(remainingFiles,
           (item) => `${item.primaryUrl}?t=${Date.now()}`,
-          "Wave 5: Cache-busted URLs"
+          "Wave 5: Final retry"
         );
         
         totalSuccess += wave5.successful;
@@ -445,7 +570,7 @@ window.onload = function () {
       downloadButton.textContent = 'Downloading...';
       downloadButton.disabled = true;
 
-      console.log(`\n=== Starting download of ${paths.length} files ===`);
+      // console.log(`\n=== Starting download of ${paths.length} files ===`);
       
       try {
         const result = await downloadFilesInWaves(zip, paths);
@@ -463,9 +588,30 @@ window.onload = function () {
         const successRate = `${result.totalSuccess}/${result.totalAttempted}`;
         
         if (result.failedFiles.length > 0) {
-          console.log(`\n=== Failed files (${result.failedFiles.length}) ===`);
-          result.failedFiles.forEach(path => console.log(`✗ ${path}`));
-          queueStatus.textContent = `Downloaded ${successRate} files`;
+          // console.log(`\n=== Failed files (${result.failedFiles.length}) ===`);
+          // result.failedFiles.forEach(path => console.log(`✗ ${path}`));
+          
+          // Create clickable status for failed files
+          queueStatus.textContent = `Downloaded ${successRate} files - ${result.failedFiles.length} failed (click to view)`;
+          queueStatus.style.cursor = 'pointer';
+          queueStatus.style.textDecoration = 'underline';
+          queueStatus.style.color = '#ff6b6b';
+          
+          // Add click handler to show failed files
+          const showFailedHandler = () => {
+            showFailedFilesModal(result.failedFiles);
+          };
+          queueStatus.addEventListener('click', showFailedHandler);
+          
+          // Remove the handler after 30 seconds to prevent memory leaks
+          setTimeout(() => {
+            queueStatus.removeEventListener('click', showFailedHandler);
+            queueStatus.style.cursor = 'default';
+            queueStatus.style.textDecoration = 'none';
+            queueStatus.style.color = '#8b949e';
+            queueStatus.textContent = `Downloaded ${successRate} files`;
+          }, 30000);
+          
         } else {
           queueStatus.textContent = `✓ Downloaded all ${result.totalSuccess} files`;
         }
