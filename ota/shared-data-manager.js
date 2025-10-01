@@ -115,7 +115,7 @@ class SharedDataManager {
     
     async _loadDataInternal() {
         try {
-            console.log('SharedDataManager: Loading data...');
+            //console.log('SharedDataManager: Loading data...');
             
             const allData = await Promise.all(
                 this.jsonFiles.map(file =>
@@ -126,14 +126,14 @@ class SharedDataManager {
                         })
                         .then(data => {
                             if (Array.isArray(data)) {
-                                console.log(`SharedDataManager: Loaded ${data.length} entries from ${file}`);
+                                //console.log(`SharedDataManager: Loaded ${data.length} entries from ${file}`);
                                 return data;
                             }
-                            console.warn(`SharedDataManager: ${file} is not an array.`);
+                            //console.warn(`SharedDataManager: ${file} is not an array.`);
                             return [];
                         })
                         .catch(err => {
-                            console.error(`SharedDataManager: Error loading ${file}:`, err);
+                            //console.error(`SharedDataManager: Error loading ${file}:`, err);
                             return [];
                         })
                 )
@@ -141,7 +141,7 @@ class SharedDataManager {
             
             // Flatten and store raw data
             this.data = allData.flat();
-            console.log(`SharedDataManager: Total entries loaded: ${this.data.length}`);
+            //console.log(`SharedDataManager: Total entries loaded: ${this.data.length}`);
             
             // Process derived data
             this._processData();
@@ -151,7 +151,7 @@ class SharedDataManager {
             
             return this.data;
         } catch (error) {
-            console.error('SharedDataManager: Critical error loading data:', error);
+            //console.error('SharedDataManager: Critical error loading data:', error);
             this.data = [];
             return this.data;
         }
@@ -189,11 +189,11 @@ class SharedDataManager {
             }
         });
         
-        console.log('SharedDataManager: Data processing complete');
-        console.log(`- Total entries: ${this.totalCount}`);
-        console.log(`- Total size: ${this.totalSize} bytes`);
-        console.log(`- Download URLs: ${Object.keys(this.fileDownloadURLs).length}`);
-        console.log(`- File sizes: ${Object.keys(this.fileSizes).length}`);
+        //console.log('SharedDataManager: Data processing complete');
+        //console.log(`- Total entries: ${this.totalCount}`);
+        //console.log(`- Total size: ${this.totalSize} bytes`);
+        //console.log(`- Download URLs: ${Object.keys(this.fileDownloadURLs).length}`);
+        //console.log(`- File sizes: ${Object.keys(this.fileSizes).length}`);
     }
     
     _processPath(entry) {
