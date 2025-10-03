@@ -5,25 +5,59 @@
     let selectionBox = null;
     const DRAG_THRESHOLD = 5; 
 
-    // --- Utility Functions ---
+    // Get body margin offset with cursor alignment adjustment
+    function getBodyOffset() {
+        const bodyStyles = window.getComputedStyle(document.body);
+        const ALIGNMENT_OFFSET = 27; // Shift left to align with cursor
+        return {
+            left: (parseFloat(bodyStyles.marginLeft) || 0) + ALIGNMENT_OFFSET,
+            top: parseFloat(bodyStyles.marginTop) || 0
+        };
+    }
 
-    // Create selection box element: Changed to position: absolute
+    // Create selection box element with locked styles
     function createSelectionBox() {
         const box = document.createElement('div');
         box.id = 'drag-selection-box';
-        box.style.cssText = `
-            position: absolute;
-            border: 2px solid #58a6ff;
-            background-color: rgba(88, 166, 255, 0.1);
-            pointer-events: none;
-            z-index: 9999;
-            visibility: hidden; 
-            opacity: 0; 
-            transition: opacity 0.05s; 
-            box-shadow: 0 0 10px rgba(88, 166, 255, 0.3);
-            box-sizing: border-box; 
-        `;
+        
+        // Set initial styles
+        const initialStyles = {
+            position: 'absolute',
+            border: '2px solid #58a6ff',
+            backgroundColor: 'rgba(88, 166, 255, 0.1)',
+            pointerEvents: 'none',
+            zIndex: '9999',
+            visibility: 'hidden',
+            opacity: '0',
+            transition: 'opacity 0.05s',
+            boxShadow: '0 0 10px rgba(88, 166, 255, 0.3)',
+            boxSizing: 'border-box',
+            margin: '0',
+            padding: '0',
+            top: '0',
+            left: '0',
+            width: '0',
+            height: '0'
+        };
+        
+        // Apply styles
+        Object.assign(box.style, initialStyles);
+        
         document.body.appendChild(box);
+        
+        // Lock the styles - prevent any modifications
+        const lockedProperties = ['position', 'border', 'backgroundColor', 'pointerEvents', 
+                                  'zIndex', 'transition', 'boxShadow', 'boxSizing', 
+                                  'margin', 'padding'];
+        
+        lockedProperties.forEach(prop => {
+            Object.defineProperty(box.style, prop, {
+                get: function() { return initialStyles[prop]; },
+                set: function() { return initialStyles[prop]; },
+                configurable: false
+            });
+        });
+        
         return box;
     }
 
@@ -31,11 +65,7 @@
     function highlightSelectedItems(selectionRect) {
         if (!selectionRect) return;
         
-        // Target file/folder items within the fileExplorer container
         const items = document.querySelectorAll('#fileExplorer .file, #fileExplorer .folder');
-
-        // FIX: The intersection logic (itemRect) uses viewport-relative coordinates, 
-        // so we must convert the page-relative selectionRect to viewport coordinates.
         const scrollX = window.scrollX || document.documentElement.scrollLeft;
         const scrollY = window.scrollY || document.documentElement.scrollTop;
 
@@ -47,9 +77,7 @@
         };
 
         items.forEach(item => {
-            const itemRect = item.getBoundingClientRect(); // Viewport-relative
-
-            // Check if item intersects with selection box (using the corrected viewport coordinates)
+            const itemRect = item.getBoundingClientRect();
             const intersects = !(
                 itemRect.right < viewportSelectionRect.left ||
                 itemRect.left > viewportSelectionRect.right ||
@@ -100,7 +128,6 @@
     }
     
     function addSelectedItemsToQueue() {
-        // Ensure global state functions are available
         if (!window.queuedFiles || typeof window.handleAddToQueue !== 'function') return;
 
         const selectedItems = document.querySelectorAll('.drag-selected');
@@ -170,102 +197,100 @@
         }, 3000);
     }
 
-    // --- Core Drag Logic ---
+    // Update selection box position (only function allowed to modify it)
+    function updateSelectionBox(left, top, width, height, visible) {
+        if (!selectionBox) return;
+        
+        // Force set properties directly bypassing any locks
+        selectionBox.style.cssText = `
+            position: absolute !important;
+            left: ${left}px !important;
+            top: ${top}px !important;
+            width: ${width}px !important;
+            height: ${height}px !important;
+            visibility: ${visible ? 'visible' : 'hidden'} !important;
+            opacity: ${visible ? '1' : '0'} !important;
+            border: 2px solid #58a6ff !important;
+            background-color: rgba(88, 166, 255, 0.1) !important;
+            pointer-events: none !important;
+            z-index: 9999 !important;
+            transition: opacity 0.05s !important;
+            box-shadow: 0 0 10px rgba(88, 166, 255, 0.3) !important;
+            box-sizing: border-box !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        `;
+    }
 
+    // Core drag logic
     function attachDragListeners() {
         selectionBox = createSelectionBox();
 
-        // MOUSE DOWN on DOCUMENT: Start the drag process globally
         document.addEventListener('mousedown', (e) => {
-            // Only start drag if not on an interactive element and not right click
             const target = e.target.closest('.file, .folder, button, input, a, .download-panel, #custom-context-menu, .settings');
-            if (e.button !== 0 || target) {
-                return; 
-            }
+            if (e.button !== 0 || target) return;
             
             isSelecting = true;
+            const offset = getBodyOffset();
+            startX = e.pageX - offset.left;
+            startY = e.pageY - offset.top;
             
-            // FIX: Use pageX/Y for absolute positioning relative to the document
-            startX = e.pageX;
-            startY = e.pageY;
+            document.body.style.userSelect = 'none';
+            document.body.style.cursor = 'crosshair';
             
-            document.body.style.userSelect = 'none'; // Prevent text selection
-            document.body.style.cursor = 'crosshair'; // Change cursor
-            
-            // Clear previous selections if CTRL/CMD key is not held
             if (!e.ctrlKey && !e.metaKey) {
                 removeHighlights();
             }
         });
 
-        // MOUSE MOVE on DOCUMENT: Draw the selection box
         document.addEventListener('mousemove', (e) => {
             if (!isSelecting) return;
 
-            // FIX: Use pageX/Y for absolute positioning relative to the document
-            const currentX = e.pageX;
-            const currentY = e.pageY;
+            const offset = getBodyOffset();
+            const currentX = e.pageX - offset.left;
+            const currentY = e.pageY - offset.top;
 
             const left = Math.min(startX, currentX);
             const top = Math.min(startY, currentY);
             const width = Math.abs(currentX - startX);
             const height = Math.abs(currentY - startY);
 
-            selectionBox.style.left = `${left}px`;
-            selectionBox.style.top = `${top}px`;
-            selectionBox.style.width = `${width}px`;
-            selectionBox.style.height = `${height}px`;
-            selectionBox.style.visibility = 'visible';
-            selectionBox.style.opacity = '1';
-
-            // Pass the page-relative selection rectangle to the highlight function
+            updateSelectionBox(left, top, width, height, true);
             highlightSelectedItems({ left, top, right: left + width, bottom: top + height });
         });
 
-        // MOUSE UP on DOCUMENT: End the drag process
         document.addEventListener('mouseup', (e) => {
             if (!isSelecting) return;
 
             isSelecting = false;
-            selectionBox.style.opacity = '0';
-            selectionBox.style.visibility = 'hidden'; 
-
-            // Restore default styles
+            updateSelectionBox(0, 0, 0, 0, false);
             document.body.style.userSelect = '';
-            document.body.style.cursor = ''; 
+            document.body.style.cursor = '';
             
             if (window.getSelection) window.getSelection().removeAllRanges();
 
-            // Check if it was a drag (not just a click)
-            // FIX: Use pageX/Y to compare against the page-relative start coordinates
-            const finalDx = Math.abs(e.pageX - startX);
-            const finalDy = Math.abs(e.pageY - startY);
+            const offset = getBodyOffset();
+            const finalDx = Math.abs((e.pageX - offset.left) - startX);
+            const finalDy = Math.abs((e.pageY - offset.top) - startY);
 
             if (finalDx >= DRAG_THRESHOLD || finalDy >= DRAG_THRESHOLD) {
-                 addSelectedItemsToQueue();
+                addSelectedItemsToQueue();
             } else {
-                 removeHighlights();
+                removeHighlights();
             }
         });
 
-        // Handle escape key to cancel selection
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape' && isSelecting) {
                 isSelecting = false;
-                
-                selectionBox.style.opacity = '0';
-                selectionBox.style.visibility = 'hidden';
-                
-                // Restore default styles
+                updateSelectionBox(0, 0, 0, 0, false);
                 document.body.style.userSelect = '';
-                document.body.style.cursor = ''; 
+                document.body.style.cursor = '';
                 removeHighlights();
             }
         });
     }
 
-    // --- Initialization ---
-    
     function initialize() { attachDragListeners(); }
 
     if (document.readyState === 'loading') {

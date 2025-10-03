@@ -30,12 +30,14 @@ body {
     color: var(--text-color);
     font-family: var(--font-family);
     padding: var(--container-padding);
-    margin: 0;
+    width: 95%;
+    margin: auto;
     overflow-y: scroll;
     scrollbar-color: #30363d #0d1117;
     scrollbar-width: thin;
     font-weight: 400;
     animation: fadeSlideUp 0.6s ease forwards;
+    overflow-x: hidden;
 }
 
 body::-webkit-scrollbar {

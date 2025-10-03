@@ -46,7 +46,7 @@ window.onload = function () {
     downloadButton.style.border = 'none';
     downloadButton.style.borderRadius = '5px';
     downloadButton.style.cursor = 'pointer';
-    downloadButton.style.zIndex = '12000';
+    downloadButton.style.zIndex = '9000';
     downloadButton.style.transition = 'background-color 0.2s ease';
     downloadButton.style.flexShrink = '0';
 
