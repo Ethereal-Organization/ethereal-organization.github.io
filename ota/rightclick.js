@@ -126,8 +126,6 @@ function showModal() { modalOverlay.style.display = 'block'; centerModal(); }
 window.addEventListener('resize', centerModal);
 window.addEventListener('scroll', centerModal);
 
-modalOverlay.addEventListener('click', (event) => { if(event.target === modalOverlay) modalOverlay.style.display = 'none'; });
-
 // == QUEUE SHARED STATE SETUP ==
 const queuedFiles = window.queuedFiles;
 

@@ -30,8 +30,6 @@ body {
     color: var(--text-color);
     font-family: var(--font-family);
     padding: var(--container-padding);
-    width: 95%;
-    margin: auto;
     overflow-y: scroll;
     scrollbar-color: #30363d #0d1117;
     scrollbar-width: thin;

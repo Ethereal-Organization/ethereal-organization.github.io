@@ -8,7 +8,7 @@
     // Get body margin offset with cursor alignment adjustment
     function getBodyOffset() {
         const bodyStyles = window.getComputedStyle(document.body);
-        const ALIGNMENT_OFFSET = 27; // Shift left to align with cursor
+        const ALIGNMENT_OFFSET = 0; // Shift left to align with cursor
         return {
             left: (parseFloat(bodyStyles.marginLeft) || 0) + ALIGNMENT_OFFSET,
             top: parseFloat(bodyStyles.marginTop) || 0
@@ -229,6 +229,10 @@
         document.addEventListener('mousedown', (e) => {
             const target = e.target.closest('.file, .folder, button, input, a, .download-panel, #custom-context-menu, .settings');
             if (e.button !== 0 || target) return;
+
+	    if (e.target.closest('#custom-context-menu') || 
+        	e.target.closest('#properties-modal-overlay') || 
+        	e.target.closest('#gamble-modal-overlay')) return;
             
             isSelecting = true;
             const offset = getBodyOffset();
