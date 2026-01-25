@@ -91,6 +91,7 @@ const fileTypeDescriptions = {
     ".pdf.": { description: "Portable Document Format", extensions: ["pdf"] },
     ".iphoneos.": { description: "iOS application", extensions: ["ipa", "app", "deb"] },
     ".rtf.": { description: "Rich Text Format document", extensions: ["rtf"] },
+    ".msoutlook.": {"description": "Microsoft Outlook file","extensions": ["dbx", "dat", "pst", "msg", "eml"],
 };
 
 const explorer = document.getElementById("fileExplorer");
